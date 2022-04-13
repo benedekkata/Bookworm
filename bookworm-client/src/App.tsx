@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import "./App.css";
 import { Routes, Route, Link } from "react-router-dom";
@@ -11,6 +11,7 @@ import {
   UsersPage,
   ResisterPage,
   LoginPage,
+  RequireAuth,
 } from "./pages";
 
 const theme = extendTheme({
@@ -24,17 +25,30 @@ const theme = extendTheme({
 });
 
 function App() {
+  const [isAuthenticated, setAuthenticated] = useState(false);
+  //use effect to check is authenticated and setAuthenticated from false to true if the token is valid
   return (
     <div className="App">
       <ChakraProvider theme={theme}>
-        <Navigation></Navigation>
+        <Navigation
+          isAuthenticated={isAuthenticated}
+          setAuthenticated={setAuthenticated}
+        ></Navigation>
         <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="users" element={<UsersPage />} />
-          <Route path="mypage" element={<MyPagePage />} />
-          <Route path="register" element={<ResisterPage />} />
-          <Route path="login" element={<LoginPage />} />
-          <Route path="bookdetails/:isbn" element={<BookDetailPage />} />
+          <Route
+            path="/register"
+            element={<ResisterPage setAuthenticated={setAuthenticated} />}
+          />
+          <Route
+            path="/login"
+            element={<LoginPage setAuthenticated={setAuthenticated} />}
+          />
+          <Route element={<RequireAuth />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/mypage" element={<MyPagePage />} />
+            <Route path="/bookdetails/:isbn" element={<BookDetailPage />} />
+          </Route>
         </Routes>
       </ChakraProvider>
     </div>

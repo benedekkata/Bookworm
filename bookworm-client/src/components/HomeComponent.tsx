@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -7,7 +8,6 @@ import {
   Image,
   Checkbox,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
 import { HomeProps } from "../interfaces";
 import BookList from "./SearchResultsComponent";
 import { FaSearch } from "react-icons/fa";

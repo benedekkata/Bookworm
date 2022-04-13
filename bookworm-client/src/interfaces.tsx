@@ -23,3 +23,8 @@ export interface ReviewData {
   author_id: string;
   points: number;
 }
+
+export interface LoginData {
+  emailAddress: string;
+  password: string;
+}

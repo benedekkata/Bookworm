@@ -1,10 +1,12 @@
 import React from "react";
 import Home from "./components/HomeComponent";
 import { BookData, ReviewData } from "./interfaces";
-import { useParams } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useParams } from "react-router-dom";
 import BookDetail from "./components/BookDetailComponent";
 import { Box, Container, Text } from "@chakra-ui/react";
 import BookReviews from "./components/BookReviewsComponent";
+import Auth from "./components/AuthComponent";
+import { isAuthenticated } from "./services/AuthenticationService";
 
 const mockBookData: BookData[] = [
   {
@@ -292,10 +294,21 @@ export const BookDetailPage = () => {
     );
 };
 
-export const LoginPage = () => {
-  return <div>LOGIN</div>;
+export const LoginPage = (props: { setAuthenticated: Function }) => {
+  return <Auth type="login" setAuthenticated={props.setAuthenticated}></Auth>;
 };
 
-export const ResisterPage = () => {
-  return <div>REGISTER</div>;
+export const ResisterPage = (props: { setAuthenticated: Function }) => {
+  return (
+    <Auth type="register" setAuthenticated={props.setAuthenticated}></Auth>
+  );
+};
+
+export const RequireAuth = () => {
+  const location = useLocation();
+  return isAuthenticated() ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/login" replace state={{ from: location }}></Navigate>
+  );
 };
