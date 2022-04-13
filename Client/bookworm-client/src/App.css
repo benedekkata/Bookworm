@@ -6,11 +6,12 @@
   color: white;
   opacity: 1;
 }
+
 .removeMobile {
   display: none;
 }
 
-button.buttonBrandPrimary:hover{
+button.buttonBrandPrimary:hover {
   background-color: #0d7e84;
 }
 
@@ -18,15 +19,18 @@ button.buttonBrandPrimary:hover{
   #detail_btn_margin {
     margin-right: -3%;
   }
+
   .removeMobile {
     display: block;
   }
 }
+
 @media screen and (min-width: 800px) {
   #detail_btn_margin {
     margin-right: -16%;
     margin-bottom: -3%;
   }
+
   .removeMobile {
     display: block;
   }
