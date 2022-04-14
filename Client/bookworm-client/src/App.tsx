@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import "./App.css";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Navigation from "./components/NavigationComponent";
 import { extendTheme } from "@chakra-ui/react";
 import {
@@ -12,6 +12,7 @@ import {
   ResisterPage,
   LoginPage,
   RequireAuth,
+  PageNotFound,
 } from "./pages";
 
 const theme = extendTheme({
@@ -49,6 +50,7 @@ function App() {
             <Route path="/mypage" element={<MyPagePage />} />
             <Route path="/bookdetails/:isbn" element={<BookDetailPage />} />
           </Route>
+          <Route path="*" element={<PageNotFound />}></Route>
         </Routes>
       </ChakraProvider>
     </div>

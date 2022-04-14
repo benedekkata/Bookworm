@@ -1,5 +1,5 @@
 import React from "react";
-import { LoginData } from "../interfaces";
+import { LoginData, LoginResponse } from "../interfaces";
 
 var state = false;
 const API: string = "https://localhost:7188/api/Authentication";
@@ -22,20 +22,23 @@ export const signIn = async (body: LoginData) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
     },
     body: JSON.stringify(body),
   };
-  const response = await fetch(`${API}/login`, requestOptions);
-  const data = await response.json();
-  console.log(data);
-  state = true;
-  console.log("logged in");
 
-  //save the response data to local storeage
+  const response = await fetch(`${API}/login`, requestOptions);
+  if (response.status === 200) {
+    const data: LoginResponse = await response.json();
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("refreshToken", data.refreshToken);
+    localStorage.setItem("expiresAt", data.expiresAt);
+    state = true;
+  }
 };
 
 export const signOut = () => {
-  //delete data from local storage
   state = false;
+  localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("expiresAt");
 };
