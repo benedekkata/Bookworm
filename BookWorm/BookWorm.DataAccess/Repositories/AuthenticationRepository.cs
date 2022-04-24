@@ -96,6 +96,24 @@ namespace BookWorm.DataAccess.Repositories
             return await GenerateJWTTokenAsync(appUser, rToken);
         }
 
+        public bool VerifyToken(string token)
+        {
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                jwtTokenHandler.ValidateToken(token, _tokenValidationParameters, out var validatedToken);
+                return true;
+            }
+            catch (SecurityTokenException)
+            {
+                return false;
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+        }
+
         private async Task<AuthResult> GenerateJWTTokenAsync(Data.Models.ApplicationUser user, string? rToken)
         {
             var authClaims = new List<Claim>()
@@ -123,6 +141,7 @@ namespace BookWorm.DataAccess.Repositories
                 {
                     Token = jwtToken,
                     RefreshToken = rToken,
+                    UserId = user.Id,
                     ExpiresAt = token.ValidTo
                 };
                 return rTokenResponse;
@@ -145,6 +164,7 @@ namespace BookWorm.DataAccess.Repositories
             {
                 Token = jwtToken,
                 RefreshToken = refreshToken.Token,
+                UserId = user.Id,
                 ExpiresAt = token.ValidTo
             };
 

@@ -37,5 +37,10 @@ namespace BookWorm.BusinessLogic.Services
         {
             return await _authenticationRepository.GenerateJWTTokenAsync(user, rToken);
         }
+
+        public bool VerifyToken(string token)
+        {
+            return _authenticationRepository.VerifyToken(token);
+        }
     }
 }

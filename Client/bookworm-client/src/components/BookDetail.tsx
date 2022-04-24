@@ -1,8 +1,10 @@
 import { Box, Text, Container, Image, Flex, Icon } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { BookData } from "../interfaces";
+import React from "react";
+import { BookData } from "../helpers/interfaces";
 
-import { MdOutlineSave } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+
+import { MdOutlineSave, MdArrowBack } from "react-icons/md";
 
 const SubjectChip = (props: { subject: string }) => {
   return (
@@ -26,13 +28,21 @@ const BookDetail = (props: { book: BookData }) => {
     <SubjectChip subject={book} />
   ));
   const regex = /<.*?>/gi;
+  const navigate = useNavigate();
   const synopsis = props.book.synopsis?.replace(regex, "");
   return (
     <React.Fragment>
       <Box w="100%">
-        <Box w="100%" my="5">
-          <Text fontSize="3xl">Details</Text>
-        </Box>
+        <Container maxW="container.lg">
+          <Flex my="5">
+            <Box onClick={() => navigate(-1)}>
+              <Icon as={MdArrowBack} w={8} h={8} mt="0.5rem" />
+            </Box>
+            <Box w="100%">
+              <Text fontSize="3xl">Details</Text>
+            </Box>
+          </Flex>
+        </Container>
         <Container
           maxW="container.lg"
           mb="5"

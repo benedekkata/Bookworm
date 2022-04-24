@@ -1,22 +1,13 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Center,
-  Flex,
-  Icon,
-  Link,
-  Spacer,
-  Square,
-} from "@chakra-ui/react";
+import React from "react";
+import { Box, Center, Flex, Icon, Spacer, Square } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { BiExit, BiUser } from "react-icons/bi";
 import { Link as RouterLink } from "react-router-dom";
-import logo from "../images/books.png";
+import logo from "../assets/images/books.png";
 import { signOut } from "../services/AuthenticationService";
 
-const Navigation = (props: {
-  isAuthenticated: boolean;
+const Navbar = (props: {
+  isAuthenticated: Boolean;
   setAuthenticated: Function;
 }) => {
   const menu = props.isAuthenticated ? (
@@ -62,4 +53,4 @@ const Navigation = (props: {
   );
 };
 
-export default Navigation;
+export default Navbar;

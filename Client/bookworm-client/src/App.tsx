@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import Navigation from "./components/NavigationComponent";
-import { extendTheme } from "@chakra-ui/react";
+import Navbar from "./layouts/Navbar";
+import { isAuthenticated as isAuthenticatedCheck } from "./services/AuthenticationService";
 import {
   BookDetailPage,
   HomePage,
@@ -12,29 +12,23 @@ import {
   ResisterPage,
   LoginPage,
   RequireAuth,
-  PageNotFound,
-} from "./pages";
+  PageNotFoundPage,
+} from "./pages/pages";
+import { AppTheme } from "./config/Theme";
 
-const theme = extendTheme({
-  colors: {
-    brand: {
-      100: "#00AFB9",
-      200: "#FF9C27",
-      300: "#18393B",
-    },
-  },
-});
+const App = () => {
+  const [isAuthenticated, setAuthenticated] = useState(true);
+  useEffect(() => {
+    isAuthenticatedCheck().then(setAuthenticated);
+  }, []);
 
-function App() {
-  const [isAuthenticated, setAuthenticated] = useState(false);
-  //use effect to check is authenticated and setAuthenticated from false to true if the token is valid
   return (
     <div className="App">
-      <ChakraProvider theme={theme}>
-        <Navigation
+      <ChakraProvider theme={AppTheme}>
+        <Navbar
           isAuthenticated={isAuthenticated}
           setAuthenticated={setAuthenticated}
-        ></Navigation>
+        ></Navbar>
         <Routes>
           <Route
             path="/register"
@@ -44,17 +38,17 @@ function App() {
             path="/login"
             element={<LoginPage setAuthenticated={setAuthenticated} />}
           />
-          <Route element={<RequireAuth />}>
+          <Route element={<RequireAuth isAuthenticated={isAuthenticated} />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/users" element={<UsersPage />} />
             <Route path="/mypage" element={<MyPagePage />} />
             <Route path="/bookdetails/:isbn" element={<BookDetailPage />} />
           </Route>
-          <Route path="*" element={<PageNotFound />}></Route>
+          <Route path="*" element={<PageNotFoundPage />}></Route>
         </Routes>
       </ChakraProvider>
     </div>
   );
-}
+};
 
 export default App;

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using BookWorm.BusinessLogic.Services;
 using BookWorm.BusinessLogic.Data.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace BookWorm.WebAPI.Controllers
 {
@@ -56,6 +57,16 @@ namespace BookWorm.WebAPI.Controllers
             var result = await _authenticationService.VerifyAndGenerateTokenAsync(tokenRequestVM);
 
             return Ok(result);
+        }
+
+        [HttpPost("validate-token")]
+        public IActionResult ValidateToken([FromBody] string token)
+        {
+            if (token == String.Empty) return BadRequest("Please, provide all the required fields!");
+
+            var result = _authenticationService.VerifyToken(token);
+
+            return result? Ok() : Unauthorized("The provided token is not valid!");
         }
     }
 }

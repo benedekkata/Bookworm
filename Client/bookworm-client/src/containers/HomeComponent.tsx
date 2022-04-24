@@ -8,17 +8,17 @@ import {
   Image,
   Checkbox,
 } from "@chakra-ui/react";
-import { HomeProps } from "../interfaces";
-import BookList from "./SearchResultsComponent";
+import { HomeProps } from "../helpers/interfaces";
+import BookList from "../components/SearchResult";
 import { FaSearch } from "react-icons/fa";
-import whiteLogo from "../images/white_book.png";
-import whiteLogoRight from "../images/white_book_right.png";
+import whiteLogo from "../assets/images/white_book.png";
+import whiteLogoRight from "../assets/images/white_book_right.png";
 
 const Home = (props: HomeProps) => {
   const [bookResultList, setBookResultList] = useState(props.testData);
   const [searchValue, setSearchValue] = useState("");
 
-  const [onlyReview, setOnlyReview] = React.useState("1");
+  const [onlyReview, setOnlyReview] = React.useState(false);
 
   const filterBookList = () => {
     const newList = props.testData.filter((item) => {
@@ -34,6 +34,7 @@ const Home = (props: HomeProps) => {
     });
     setBookResultList(newList);
   };
+
   return (
     <React.Fragment>
       <Box bg="brand.200" height="200px">
@@ -99,7 +100,12 @@ const Home = (props: HomeProps) => {
           </Flex>
         </Flex>
         <Container textColor="white">
-          <Checkbox>Only show reviewed by me</Checkbox>
+          <Checkbox
+            isChecked={onlyReview}
+            onChange={(e) => setOnlyReview(e.target.checked)}
+          >
+            Only show reviewed by me
+          </Checkbox>
         </Container>
       </Box>
       <BookList list={bookResultList} />,

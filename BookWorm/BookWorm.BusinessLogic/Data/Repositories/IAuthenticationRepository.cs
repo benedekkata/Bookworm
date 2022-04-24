@@ -14,5 +14,7 @@ namespace BookWorm.BusinessLogic.Data.Repositories
         public  Task<AuthResult> VerifyAndGenerateTokenAsync(TokenRequest token);
 
         public  Task<AuthResult> GenerateJWTTokenAsync(ApplicationUser user, string? rToken);
+
+        public bool VerifyToken(string token);
     }
 }

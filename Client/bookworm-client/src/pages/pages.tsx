@@ -1,13 +1,12 @@
 import React from "react";
-import Home from "./components/HomeComponent";
-import { BookData, ReviewData } from "./interfaces";
+import Home from "../containers/HomeComponent";
+import { BookData, ReviewData } from "../helpers/interfaces";
 import { Navigate, Outlet, useLocation, useParams } from "react-router-dom";
-import BookDetail from "./components/BookDetailComponent";
-import { Box, Container, Flex, Icon, Text } from "@chakra-ui/react";
-import BookReviews from "./components/BookReviewsComponent";
-import Auth from "./components/AuthComponent";
-import { isAuthenticated } from "./services/AuthenticationService";
-import { BsExclamationCircle } from "react-icons/bs";
+import BookDetailedView from "../layouts/BookDetailedView";
+import BookNotFound from "../components/BookNotFound";
+import Login from "../containers/Login";
+import Register from "../containers/Register";
+import PageNotFound from "../components/PageNotFound";
 
 const mockBookData: BookData[] = [
   {
@@ -256,6 +255,7 @@ const sampleReviews: ReviewData[] = [
     points: 3,
   },
 ];
+
 export const HomePage = () => {
   return <Home testData={mockBookData}></Home>;
 };
@@ -270,65 +270,36 @@ export const MyPagePage = () => {
 
 export const BookDetailPage = () => {
   const { isbn } = useParams();
-  const book = mockBookData.find((book) => book.isbn13 === isbn);
+  const book: BookData | undefined = mockBookData.find(
+    (book) => book.isbn13 === isbn
+  );
   if (book)
     return (
-      <React.Fragment>
-        <BookDetail book={book}></BookDetail>
-        <BookReviews reviews={sampleReviews}></BookReviews>
-      </React.Fragment>
+      <BookDetailedView
+        data={{ book: book, reviews: sampleReviews }}
+      ></BookDetailedView>
     );
-  else
-    return (
-      <Container
-        my="3rem"
-        p="3"
-        bg="brand.100"
-        borderRadius="3xl"
-        boxShadow="md"
-        w="50%"
-      >
-        <Text color="white" fontSize="3xl">
-          The book does not exists!
-        </Text>
-      </Container>
-    );
+  else return <BookNotFound />;
 };
 
 export const LoginPage = (props: { setAuthenticated: Function }) => {
-  return <Auth type="login" setAuthenticated={props.setAuthenticated}></Auth>;
+  return <Login setAuthenticated={props.setAuthenticated} />;
 };
 
 export const ResisterPage = (props: { setAuthenticated: Function }) => {
-  return (
-    <Auth type="register" setAuthenticated={props.setAuthenticated}></Auth>
-  );
+  return <Register setAuthenticated={props.setAuthenticated} />;
 };
 
-export const RequireAuth = () => {
+export const RequireAuth = (props: { isAuthenticated: Boolean }) => {
   const location = useLocation();
-  return isAuthenticated() ? (
-    <Outlet />
-  ) : (
+
+  return props.isAuthenticated === false ? (
     <Navigate to="/login" replace state={{ from: location }}></Navigate>
+  ) : (
+    <Outlet />
   );
 };
 
-export const PageNotFound = () => {
-  return (
-    <Container
-      borderRadius="2xl"
-      textColor="white"
-      h="5rem"
-      mt="2rem"
-      backgroundColor="brand.200"
-    >
-      <Flex alignItems="center" h="100%" w="100%">
-        <Icon as={BsExclamationCircle} w={7} h={7}></Icon>
-        <Text w="100%" align="center">
-          Page not found! Please select a valid URL!
-        </Text>
-      </Flex>
-    </Container>
-  );
+export const PageNotFoundPage = () => {
+  return <PageNotFound />;
 };

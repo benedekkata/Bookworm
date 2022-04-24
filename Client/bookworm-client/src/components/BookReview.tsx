@@ -1,6 +1,6 @@
-import { Box, Text, Container, Image, Flex, Icon } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { BookData, ReviewData } from "../interfaces";
+import { Box, Text, Container, Flex, Icon } from "@chakra-ui/react";
+import React from "react";
+import { ReviewData } from "../helpers/interfaces";
 
 import { FaUserCircle } from "react-icons/fa";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
@@ -46,7 +46,7 @@ const ReviewItem = (props: { review: ReviewData }) => {
   );
 };
 
-const BookReviews = (props: { reviews: ReviewData[] }) => {
+const BookReview = (props: { reviews: ReviewData[] }) => {
   const reviewItems = props.reviews.map((r) => <ReviewItem review={r} />);
 
   return (
@@ -69,4 +69,4 @@ const BookReviews = (props: { reviews: ReviewData[] }) => {
   );
 };
 
-export default BookReviews;
+export default BookReview;

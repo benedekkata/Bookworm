@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -14,21 +15,14 @@ import {
   FormControl,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
-import logo from "../images/books.png";
+import logo from "../assets/images/books.png";
 import { BiLogInCircle, BiKey } from "react-icons/bi";
 import { MdOutlineEmail } from "react-icons/md";
-import { FiUser } from "react-icons/fi";
-import { AiOutlineStar } from "react-icons/ai";
 
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
-import {
-  isAuthenticated,
-  signIn,
-  signUp,
-} from "../services/AuthenticationService";
+import { isAuthenticated, signIn } from "../services/AuthenticationService";
 
-const Auth = (props: { type: string; setAuthenticated: Function }) => {
+const Login = (props: { setAuthenticated: Function }) => {
   const location: any = useLocation();
   const navigate = useNavigate();
 
@@ -94,80 +88,7 @@ const Auth = (props: { type: string; setAuthenticated: Function }) => {
       </Stack>
     </Center>
   );
-  const registerForm = (
-    <Center>
-      <Stack spacing={3} w="75%" my="2rem">
-        <InputGroup>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<MdOutlineEmail color="gray.300" />}
-          />
-          <Input
-            variant="outline"
-            type="email"
-            borderRadius="2xl"
-            borderColor="brand.100"
-            borderWidth="2px"
-            placeholder="Email"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<FiUser color="gray.300" />}
-          />
-          <Input
-            variant="outline"
-            borderRadius="2xl"
-            borderColor="brand.100"
-            borderWidth="2px"
-            placeholder="Username"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<AiOutlineStar color="gray.300" />}
-          />
-          <Input
-            variant="outline"
-            borderRadius="2xl"
-            borderColor="brand.100"
-            borderWidth="2px"
-            placeholder="Display Name"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<BiKey color="gray.300" />}
-          />
-          <Input
-            type="password"
-            variant="outline"
-            borderColor="brand.100"
-            borderRadius="2xl"
-            borderWidth="2px"
-            placeholder="Password"
-          />
-        </InputGroup>
-        <InputGroup>
-          <InputLeftElement
-            pointerEvents="none"
-            children={<BiKey color="gray.300" />}
-          />
-          <Input
-            type="password"
-            variant="outline"
-            borderColor="brand.100"
-            borderRadius="2xl"
-            borderWidth="2px"
-            placeholder="Password again"
-          />
-        </InputGroup>
-      </Stack>
-    </Center>
-  );
+
   const loginError = failedLogin ? (
     <Container>
       <Alert status="error" my="0.5rem" borderRadius="2xl" textAlign="center">
@@ -185,6 +106,7 @@ const Auth = (props: { type: string; setAuthenticated: Function }) => {
       <div></div>
     </Box>
   );
+
   const loginButton = (
     <Button
       className="buttonBrandPrimary"
@@ -192,28 +114,26 @@ const Auth = (props: { type: string; setAuthenticated: Function }) => {
       borderRadius="2xl"
       px="1.5rem"
       onClick={async () => {
-        if (props.type === "login") {
-          setIsLoading(true);
-          if (email === "") {
-            setIsErrorEmail(true);
-          }
-          if (password === "") {
-            setIsErrorPw(true);
-          }
-          if (!isErrorEmail && !isErrorPw) {
-            await signIn({ emailAddress: email, password: password }).catch(
-              () => {}
-            );
-          }
-          setIsLoading(false);
-        } else {
-          signUp("text");
+        setIsLoading(true);
+        if (email === "") {
+          setIsErrorEmail(true);
         }
-        if (isAuthenticated()) {
+        if (password === "") {
+          setIsErrorPw(true);
+        }
+        if (!isErrorEmail && !isErrorPw) {
+          await signIn({ emailAddress: email, password: password }).catch(
+            () => {}
+          );
+        }
+        setIsLoading(false);
+
+        if (await isAuthenticated()) {
           props.setAuthenticated(true);
           setFailedLogin(false);
           if (location.state?.from) {
             navigate(location.state.from);
+            console.log(location.state.from);
           } else {
             navigate("/");
           }
@@ -225,27 +145,22 @@ const Auth = (props: { type: string; setAuthenticated: Function }) => {
       backgroundColor="brand.100"
       textColor="white"
     >
-      {props.type === "login" ? "Sign In" : "Sign Up"}
+      Sign In
     </Button>
   );
 
-  const form = props.type === "login" ? loginForm : registerForm;
   return (
     <Flex minH="41.3rem">
       <Center w="60%">
         <Container p="2rem" maxW="2xl">
-          <Box fontSize="3xl">
-            {props.type === "login"
-              ? "Login to your account"
-              : "Register a new account"}
-          </Box>
+          <Box fontSize="3xl">Login to your account</Box>
           {loginError}
           <Box
             w="100%"
             minH="1rem"
             sx={{ borderBottom: "0.2rem solid gray" }}
           ></Box>
-          <Box>{isLoading ? loadingScreen : form}</Box>
+          <Box>{isLoading ? loadingScreen : loginForm}</Box>
 
           <Box>{isLoading ? null : loginButton}</Box>
         </Container>
@@ -260,9 +175,9 @@ const Auth = (props: { type: string; setAuthenticated: Function }) => {
             alt="Bookworm"
           />
           <Box fontSize="3xl" textColor="white" mb="2rem">
-            {props.type === "login" ? "New here?" : "Already have an account?"}
+            Already have an account?
           </Box>
-          <RouterLink to={props.type === "login" ? "/register" : "/login"}>
+          <RouterLink to="/register">
             <Button
               boxShadow="md"
               borderRadius="2xl"
@@ -271,7 +186,7 @@ const Auth = (props: { type: string; setAuthenticated: Function }) => {
               backgroundColor="white"
               textColor="brand.100"
             >
-              {props.type === "login" ? "Sign Up" : "Sign In"}
+              Sign Up
             </Button>
           </RouterLink>
         </Container>
@@ -279,4 +194,4 @@ const Auth = (props: { type: string; setAuthenticated: Function }) => {
     </Flex>
   );
 };
-export default Auth;
+export default Login;

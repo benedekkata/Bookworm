@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Container, Flex, Icon, Image, Text } from "@chakra-ui/react";
-import { BookData } from "../interfaces";
+import { BookData } from "../helpers/interfaces";
 import { MdOutlineOpenInNew } from "react-icons/md";
 import { Link as RouterLink } from "react-router-dom";
 

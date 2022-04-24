@@ -12,6 +12,7 @@ export interface BookData {
   authors: string[];
   subjects?: string[];
 }
+
 export interface HomeProps {
   testData: BookData[];
 }
@@ -32,5 +33,18 @@ export interface LoginData {
 export interface LoginResponse {
   token: string;
   refreshToken: string;
+  userId: string;
   expiresAt: string;
+}
+
+export interface RegisterData {
+  emailAddress: string;
+  password: string;
+  displayName: string;
+  username: string;
+}
+
+export interface BookDetails {
+  book: BookData;
+  reviews: ReviewData[];
 }
