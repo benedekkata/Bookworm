@@ -40,6 +40,7 @@ export interface LoginResponse {
 export interface RegisterData {
   emailAddress: string;
   password: string;
+  passwordVerification: string | undefined;
   displayName: string;
   username: string;
 }
