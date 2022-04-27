@@ -133,7 +133,6 @@ const Login = (props: { setAuthenticated: Function }) => {
           setFailedLogin(false);
           if (location.state?.from) {
             navigate(location.state.from);
-            console.log(location.state.from);
           } else {
             navigate("/");
           }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Container,
@@ -8,32 +8,33 @@ import {
   Image,
   Checkbox,
 } from "@chakra-ui/react";
-import { HomeProps } from "../helpers/interfaces";
-import BookList from "../components/SearchResult";
+import SearchResult from "../components/SearchResult";
 import { FaSearch } from "react-icons/fa";
 import whiteLogo from "../assets/images/white_book.png";
 import whiteLogoRight from "../assets/images/white_book_right.png";
+import { BookData } from "../helpers/interfaces";
+import { getBookList } from "../services/BookService";
 
-const Home = (props: HomeProps) => {
-  const [bookResultList, setBookResultList] = useState(props.testData);
+const Home = () => {
+  const [bookResultList, setBookResultList] = useState<BookData[]>([]);
   const [searchValue, setSearchValue] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const loadingScreen = (
+    <Box mt="2rem" className="lds-ring">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </Box>
+  );
+  const searchRes = <SearchResult list={bookResultList} />;
+  const onClickSearch = async () => {
+    setIsLoading(true);
+    setBookResultList(await getBookList(searchValue));
+    setIsLoading(false);
+  };
 
   const [onlyReview, setOnlyReview] = React.useState(false);
-
-  const filterBookList = () => {
-    const newList = props.testData.filter((item) => {
-      const authorsMatch: boolean = item.authors
-        .join(" ")
-        .toLocaleLowerCase()
-        .includes(searchValue.toLocaleLowerCase());
-      return (
-        item.title
-          .toLocaleLowerCase()
-          .includes(searchValue.toLocaleLowerCase()) || authorsMatch
-      );
-    });
-    setBookResultList(newList);
-  };
 
   return (
     <React.Fragment>
@@ -94,7 +95,7 @@ const Home = (props: HomeProps) => {
             bg="brand.100"
             boxShadow="md"
             justifyContent="center"
-            onClick={filterBookList}
+            onClick={onClickSearch}
           >
             <Icon as={FaSearch} w={7} h={7} mt="15px" color="white" />
           </Flex>
@@ -108,7 +109,7 @@ const Home = (props: HomeProps) => {
           </Checkbox>
         </Container>
       </Box>
-      <BookList list={bookResultList} />,
+      <Box>{isLoading ? loadingScreen : searchRes}</Box>
     </React.Fragment>
   );
 };

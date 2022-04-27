@@ -12,10 +12,9 @@ import {
   Alert,
   AlertIcon,
   FormControl,
-  FormLabel,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import logo from "../assets/images/books.png";
 import { BiLogInCircle, BiKey } from "react-icons/bi";
 import { MdOutlineEmail } from "react-icons/md";
@@ -33,12 +32,29 @@ const Register = (props: { setAuthenticated: Function }) => {
 
   const [failedRegister, setFailedRegister] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    watch,
+    formState: { errors },
   } = useForm<RegisterData>();
-  const onSubmit: SubmitHandler<RegisterData> = (data) => console.log(data);
+  const onSubmit: SubmitHandler<RegisterData> = async (data) => {
+    setIsLoading(true);
+    const isSuccess = await signUp(data).catch(() => setFailedRegister(true));
+    if (isSuccess) {
+      setFailedRegister(false);
+      navigate("/login");
+    } else {
+      setFailedRegister(true);
+    }
+
+    setIsLoading(false);
+  };
+
+  const password = useRef({});
+  password.current = watch("password", "");
 
   const regForm = (
     <Center w="100%">
@@ -117,6 +133,16 @@ const Register = (props: { setAuthenticated: Function }) => {
               <Input
                 {...register("password", {
                   required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Minimum length should be 6",
+                  },
+                  pattern: {
+                    value:
+                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                    message:
+                      "Passwords must be at least 6 characters, must have at least one non alphanumeric character, at least one digit ('0'-'9') and at least one uppercase ('A'-'Z').",
+                  },
                 })}
                 type="password"
                 variant="outline"
@@ -139,6 +165,8 @@ const Register = (props: { setAuthenticated: Function }) => {
               <Input
                 {...register("passwordVerification", {
                   required: "Password verification is required",
+                  validate: (value) =>
+                    value === password.current || "The passwords do not match",
                 })}
                 type="password"
                 variant="outline"
@@ -199,7 +227,7 @@ const Register = (props: { setAuthenticated: Function }) => {
             minH="1rem"
             sx={{ borderBottom: "0.2rem solid gray" }}
           ></Box>
-          <Box>{isSubmitting ? loadingScreen : regForm}</Box>
+          <Box>{isLoading ? loadingScreen : regForm}</Box>
         </Container>
       </Center>
       <Center w="40%" backgroundColor="brand.100">

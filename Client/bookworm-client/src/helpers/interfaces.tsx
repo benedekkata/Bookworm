@@ -4,17 +4,13 @@ export interface BookData {
   isbn13: string;
   publisher: string;
   language: string;
-  date_published: string;
+  datePublished: string;
   pages?: number;
   image: string;
   synopsis?: string;
   overview?: string;
   authors: string[];
   subjects?: string[];
-}
-
-export interface HomeProps {
-  testData: BookData[];
 }
 
 export interface ReviewData {

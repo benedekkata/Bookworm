@@ -13,7 +13,7 @@ namespace BookWorm.BusinessLogic.Services
             _bookRepository = bookRepository;
         }
 
-        public async Task<IEnumerable<Book>> GetBookByTitleOrAuthorName(string searchQuery)
+        public async Task<IEnumerable<ReducedBook>> GetBookByTitleOrAuthorName(string searchQuery)
         {
             try
             {
@@ -26,12 +26,12 @@ namespace BookWorm.BusinessLogic.Services
             }
         }
 
-        public async Task<IEnumerable<Book>> GetBookByIsbn(string isbn)
+        public async Task<Book> GetBookByIsbn(string isbn)
         {
             try
             {
-                var bookList = await _bookRepository.GetBookByIsbn(isbn);
-                return bookList;
+                var book = await _bookRepository.GetBookByIsbn(isbn);
+                return book;
             }
             catch (HttpRequestException e)
             {
