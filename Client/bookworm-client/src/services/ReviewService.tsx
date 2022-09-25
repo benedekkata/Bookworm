@@ -1,5 +1,6 @@
 import { API_REVIEW } from "../helpers/constants";
 import { Review } from "../helpers/interfaces";
+import { UnauthorizedError } from "../helpers/utils";
 
 export const sendReview = async (
   stars: number,
@@ -27,7 +28,13 @@ export const sendReview = async (
   };
 
   const res = await fetch(`${API_REVIEW}/new`, requestOptions).catch();
-  return res.status === 200;
+  if (res.status === 200) {
+    return true;
+  }
+  if (res.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+  return false;
 };
 
 export const getReviews = async (
@@ -51,6 +58,9 @@ export const getReviews = async (
     const res: Review[] = await response.json();
     return res;
   }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
 
   return undefined;
 };
@@ -71,7 +81,13 @@ export const removeReviewDb = async (id: number): Promise<boolean> => {
     requestOptions
   ).catch();
 
-  return response.status === 200;
+  if (response.status === 200) {
+    return true;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+  return false;
 };
 
 export const editReview = async (review: Review | null): Promise<boolean> => {
@@ -86,5 +102,11 @@ export const editReview = async (review: Review | null): Promise<boolean> => {
   };
 
   const res = await fetch(`${API_REVIEW}/edit`, requestOptions).catch();
-  return res.status === 200;
+  if (res.status === 200) {
+    return true;
+  }
+  if (res.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+  return false;
 };

@@ -1,6 +1,6 @@
 import { Box, Text, Container, Image, Flex, Icon } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { BookData } from "../helpers/interfaces";
+import { BookData, UnauthorizedError } from "../helpers/interfaces";
 
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -10,6 +10,7 @@ import BookNotFound from "../components/BookNotFound";
 
 import bookDefaultImg from "../assets/images/books.png";
 import Loading from "../layouts/Loading";
+import { isAuthenticated } from "../services/AuthenticationService";
 
 const SubjectChip = (props: { subject: string }) => {
   return (
@@ -36,6 +37,9 @@ const BookDetail = () => {
       .then(setBook)
       .then(() => {
         if (!book) setBookNotFound(true);
+      })
+      .catch(async (error: UnauthorizedError) => {
+        if (!(await isAuthenticated())) navigate("/login");
       });
   }, []);
 

@@ -14,7 +14,7 @@ import {
   Button,
   Spacer,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { FaUserCircle } from "react-icons/fa";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
@@ -25,9 +25,10 @@ import {
   removeReviewDb,
   sendReview,
 } from "../services/ReviewService";
-import { useParams } from "react-router-dom";
-import { Review } from "../helpers/interfaces";
+import { useNavigate, useParams } from "react-router-dom";
+import { Review, UnauthorizedError } from "../helpers/interfaces";
 import Loading from "../layouts/Loading";
+import { isAuthenticated } from "../services/AuthenticationService";
 
 const ReviewItem = (props: {
   key: string;
@@ -47,11 +48,19 @@ const ReviewItem = (props: {
     stars.push(<Icon w={5} key={i + "empty"} h={5} as={AiOutlineStar}></Icon>);
   }
   const uid: string = localStorage.getItem("userId") || "";
-
+  const navigate = useNavigate();
   const removeReview = async () => {
-    const success = await removeReviewDb(props.review.id);
+    const success = await removeReviewDb(props.review.id).catch(
+      async (error: UnauthorizedError) => {
+        if (!(await isAuthenticated())) navigate("/login");
+      }
+    );
     if (success) {
-      props.modify(await getReviews(isbn));
+      props.modify(
+        await getReviews(isbn).catch(async (error: UnauthorizedError) => {
+          if (!(await isAuthenticated())) navigate("/login");
+        })
+      );
     }
   };
 
@@ -141,16 +150,26 @@ const BookReview = () => {
   ));
 
   const [isLoading, setIsLoading] = useState(false);
-
+  const navigate = useNavigate();
   const onReviewSend = async () => {
     setIsLoading(true);
     let success = false;
     if (!isOnEditMode) {
-      success = await sendReview(sliderValue, textAreaValue, isbn);
+      success =
+        (await sendReview(sliderValue, textAreaValue, isbn).catch(
+          async (error: UnauthorizedError) => {
+            if (!(await isAuthenticated())) navigate("/login");
+          }
+        )) || false;
     } else if (currentReview) {
       currentReview.comment = textAreaValue;
       currentReview.stars = sliderValue;
-      success = await editReview(currentReview);
+      success =
+        (await editReview(currentReview).catch(
+          async (error: UnauthorizedError) => {
+            if (!(await isAuthenticated())) navigate("/login");
+          }
+        )) || false;
     }
     setIsLoading(false);
     setIsOnEditMode(false);

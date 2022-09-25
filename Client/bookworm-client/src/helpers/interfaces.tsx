@@ -49,3 +49,5 @@ export interface Review {
   bookIsbn: string;
   stars: number;
 }
+
+export interface UnauthorizedError extends Error {}

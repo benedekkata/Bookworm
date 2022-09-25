@@ -15,6 +15,7 @@ import {
   PageNotFoundPage,
 } from "./pages/pages";
 import { AppTheme } from "./config/Theme";
+import { PrivateRoute } from "./helpers/utils";
 
 const App = () => {
   const [isAuthenticated, setAuthenticated] = useState(true);
@@ -38,10 +39,16 @@ const App = () => {
             path="/login"
             element={<LoginPage setAuthenticated={setAuthenticated} />}
           />
-          <Route element={<RequireAuth isAuthenticated={isAuthenticated} />}>
+          <Route path="/" element={<PrivateRoute />}>
             <Route path="/" element={<HomePage />} />
+          </Route>
+          <Route path="/" element={<PrivateRoute />}>
             <Route path="/users" element={<UsersPage />} />
+          </Route>
+          <Route path="/" element={<PrivateRoute />}>
             <Route path="/mypage" element={<MyPagePage />} />
+          </Route>
+          <Route path="/" element={<PrivateRoute />}>
             <Route path="/bookdetails/:isbn" element={<BookDetailPage />} />
           </Route>
           <Route path="*" element={<PageNotFoundPage />}></Route>

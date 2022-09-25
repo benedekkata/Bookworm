@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Center, Flex, Icon, Spacer, Square } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { BiExit, BiUser } from "react-icons/bi";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, Navigate, useNavigate } from "react-router-dom";
 import logo from "../assets/images/books.png";
 import { signOut } from "../services/AuthenticationService";
 
@@ -10,6 +10,7 @@ const Navbar = (props: {
   isAuthenticated: Boolean;
   setAuthenticated: Function;
 }) => {
+  const navigate = useNavigate();
   const menu = props.isAuthenticated ? (
     <React.Fragment>
       <Center ml="3" mr="3">
@@ -33,6 +34,7 @@ const Navbar = (props: {
         mr="3"
         onClick={() => {
           signOut();
+          navigate("/login");
           props.setAuthenticated(false);
         }}
       >
