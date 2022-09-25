@@ -3,6 +3,7 @@ import { Box, Container, Flex, Icon, Image, Text } from "@chakra-ui/react";
 import { BookData } from "../helpers/interfaces";
 import { MdOutlineOpenInNew } from "react-icons/md";
 import { Link as RouterLink } from "react-router-dom";
+import bookDefaultImg from "../assets/images/books.png";
 
 const ListItem = (props: { key: string; value: BookData }) => {
   const authors = props.value.authors.join(" «» ");
@@ -21,6 +22,10 @@ const ListItem = (props: { key: string; value: BookData }) => {
         boxSize="100px"
         boxShadow="md"
         src={props.value.image}
+        onError={(e: any) => {
+          e.target.onError = null;
+          e.target.src = bookDefaultImg;
+        }}
         alt="Image"
       />
       <Box w="80%" pl="5">
@@ -39,7 +44,7 @@ const ListItem = (props: { key: string; value: BookData }) => {
           {props.value.isbn13}
         </Box>
         <Box display="flex" fontSize="md">
-          {props.value.date_published}
+          {props.value.datePublished}
         </Box>
         <Flex justifyContent="right">
           <Flex
@@ -66,15 +71,17 @@ const ListItem = (props: { key: string; value: BookData }) => {
   );
 };
 
-const BookList = (props: { list: BookData[] }) => {
+const SearchResult = (props: { list: BookData[] }) => {
   const numbers = props.list;
+  const textResults =
+    props.list.length === 0 ? null : <Text fontSize="3xl">Results</Text>;
   const listItems = numbers.map((book) => (
     <ListItem key={book.isbn13.toString()} value={book} />
   ));
   return (
     <Box w="100%">
       <Box w="100%" my="5">
-        <Text fontSize="3xl">Results</Text>
+        {textResults}
       </Box>
       <Container maxW="container.lg" alignItems="center">
         {listItems}
@@ -83,4 +90,4 @@ const BookList = (props: { list: BookData[] }) => {
   );
 };
 
-export default BookList;
+export default SearchResult;

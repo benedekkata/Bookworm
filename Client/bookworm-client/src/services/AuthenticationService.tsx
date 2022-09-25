@@ -26,8 +26,21 @@ export const isAuthenticated = async (): Promise<boolean> => {
   return true;
 };
 
-export const signUp = (body: RegisterData) => {
-  console.log("registered");
+export const signUp = async (body: RegisterData) => {
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  };
+
+  const response: Response = await fetch(
+    `${API_AUTH}/register`,
+    requestOptions
+  );
+
+  return response.status === 200;
 };
 
 export const signIn = async (body: LoginData) => {
@@ -69,6 +82,16 @@ const isValidAsync = async (token: string): Promise<boolean> => {
   );
   if (response.status === 200) {
     return true;
+  }
+  if (response.status === 401) {
+    const refreshToken: string | null = localStorage.getItem("refreshToken");
+    if (refreshToken) {
+      const refreshed: boolean = await refreshTokenAsync(
+        token,
+        refreshToken
+      ).catch();
+      if (refreshed) return true;
+    }
   }
   return false;
 };

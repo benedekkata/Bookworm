@@ -5,16 +5,16 @@ import { ReviewData } from "../helpers/interfaces";
 import { FaUserCircle } from "react-icons/fa";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
-const ReviewItem = (props: { review: ReviewData }) => {
+const ReviewItem = (props: { key: string; review: ReviewData }) => {
   var stars = [];
   const normalizedPoints: number =
     Math.abs(props.review.points) > 5 ? 5 : Math.abs(props.review.points);
 
   for (let i = 0; i < normalizedPoints; i++) {
-    stars.push(<Icon w={5} h={5} as={AiFillStar}></Icon>);
+    stars.push(<Icon key={i + "filled"} w={5} h={5} as={AiFillStar}></Icon>);
   }
   for (let i = 0; i < 5 - normalizedPoints; i++) {
-    stars.push(<Icon w={5} h={5} as={AiOutlineStar}></Icon>);
+    stars.push(<Icon w={5} key={i + "empty"} h={5} as={AiOutlineStar}></Icon>);
   }
   return (
     <Container
@@ -47,7 +47,9 @@ const ReviewItem = (props: { review: ReviewData }) => {
 };
 
 const BookReview = (props: { reviews: ReviewData[] }) => {
-  const reviewItems = props.reviews.map((r) => <ReviewItem review={r} />);
+  const reviewItems = props.reviews.map((r) => (
+    <ReviewItem key={r._id} review={r} />
+  ));
 
   return (
     <React.Fragment>
