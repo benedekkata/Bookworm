@@ -4,7 +4,7 @@ export interface BookData {
   isbn13: string;
   publisher: string;
   language: string;
-  date_published: string;
+  datePublished: string;
   pages?: number;
   image: string;
   synopsis?: string;
@@ -36,6 +36,7 @@ export interface LoginResponse {
 export interface RegisterData {
   emailAddress: string;
   password: string;
+  passwordVerification: string | undefined;
   displayName: string;
   username: string;
 }

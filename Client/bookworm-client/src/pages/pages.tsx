@@ -5,10 +5,6 @@ import BookDetailedView from "../layouts/BookDetailedView";
 import Login from "../containers/Login";
 import Register from "../containers/Register";
 import PageNotFound from "../components/PageNotFound";
-import { BookData, Review } from "../helpers/interfaces";
-import BookNotFound from "../components/BookNotFound";
-import { getBookByIsbn } from "../services/BookService";
-import Loading from "../layouts/Loading";
 
 export const HomePage = () => {
   return <Home></Home>;
@@ -23,20 +19,7 @@ export const MyPagePage = () => {
 };
 
 export const BookDetailPage = () => {
-  const { isbn } = useParams();
-
-  const [book, setBook] = useState<BookData | undefined>();
-  const [bookNotFound, setBookNotFound] = useState(false);
-  useEffect(() => {
-    getBookByIsbn(isbn || "")
-      .then(setBook)
-      .then(() => {
-        if (!book) setBookNotFound(true);
-      });
-  }, []);
-
-  if (book) return <BookDetailedView data={book}></BookDetailedView>;
-  else return bookNotFound ? <BookNotFound /> : <Loading />;
+  return <BookDetailedView></BookDetailedView>;
 };
 
 export const LoginPage = (props: { setAuthenticated: Function }) => {
