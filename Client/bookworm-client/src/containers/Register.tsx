@@ -22,6 +22,7 @@ import { AiOutlineStar } from "react-icons/ai";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { isAuthenticated, signUp } from "../services/AuthenticationService";
 import { RegisterData } from "../helpers/interfaces";
+import Loading from "../layouts/Loading";
 
 const Register = (props: { setAuthenticated: Function }) => {
   const location: any = useLocation();
@@ -124,14 +125,6 @@ const Register = (props: { setAuthenticated: Function }) => {
     </Container>
   ) : null;
 
-  const loadingScreen = (
-    <Box mt="2rem" className="lds-ring">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </Box>
-  );
   const loginButton = (
     <Button
       className="buttonBrandPrimary"
@@ -172,7 +165,7 @@ const Register = (props: { setAuthenticated: Function }) => {
             minH="1rem"
             sx={{ borderBottom: "0.2rem solid gray" }}
           ></Box>
-          <Box>{isLoading ? loadingScreen : registerForm}</Box>
+          <Box>{isLoading ? <Loading /> : registerForm}</Box>
 
           <Box>{isLoading ? null : loginButton}</Box>
         </Container>

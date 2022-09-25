@@ -1,11 +1,10 @@
 import { Box, Text, Container, Image, Flex, Icon } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { BookData } from "../helpers/interfaces";
 
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { MdOutlineSave, MdArrowBack } from "react-icons/md";
-import { getBookByIsbn } from "../services/BookService";
 
 const SubjectChip = (props: { subject: string }) => {
   return (
@@ -23,22 +22,14 @@ const SubjectChip = (props: { subject: string }) => {
   );
 };
 
-const BookDetail = () => {
-  const [book, setBook] = useState<BookData>();
-  const { isbn } = useParams();
-  useEffect(() => {
-    getBookByIsbn(isbn || "")
-      .then(setBook)
-      .catch();
-  }, []);
-
-  const authors = book?.authors.join(" «» ");
-  const subjects = book?.subjects?.map((book, i) => (
-    <SubjectChip subject={book} key={`${book}${i}`} />
+const BookDetail = (props: { book: BookData }) => {
+  const authors = props.book.authors.join(" «» ");
+  const subjects = props.book.subjects?.map((book) => (
+    <SubjectChip subject={book} />
   ));
   const regex = /<.*?>/gi;
   const navigate = useNavigate();
-  //const synopsis =book.synopsis?.replace(regex, "");
+  const synopsis = props.book.synopsis?.replace(regex, "");
   return (
     <React.Fragment>
       <Box w="100%">

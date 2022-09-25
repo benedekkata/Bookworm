@@ -4,9 +4,6 @@ import {
   Container,
   Flex,
   Icon,
-  Editable,
-  EditablePreview,
-  EditableTextarea,
   Slider,
   SliderMark,
   SliderTrack,
@@ -30,6 +27,7 @@ import {
 } from "../services/ReviewService";
 import { useParams } from "react-router-dom";
 import { Review } from "../helpers/interfaces";
+import Loading from "../layouts/Loading";
 
 const ReviewItem = (props: {
   key: string;
@@ -262,15 +260,6 @@ const BookReview = () => {
     </Container>
   );
 
-  const loadingScreen = (
-    <Box mt="2rem" className="lds-ring">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </Box>
-  );
-
   return (
     <React.Fragment>
       <Box w="100%">
@@ -286,7 +275,7 @@ const BookReview = () => {
           <Text fontSize="3xl">Reviews</Text>
         </Container>
         {reviewItems}
-        <Box>{isLoading ? loadingScreen : reviewForm}</Box>
+        <Box>{isLoading ? <Loading /> : reviewForm}</Box>
       </Box>
     </React.Fragment>
   );

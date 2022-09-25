@@ -8,14 +8,15 @@ import {
   Image,
   Checkbox,
 } from "@chakra-ui/react";
-import { HomeProps } from "../helpers/interfaces";
 import BookList from "../components/SearchResult";
 import { FaSearch } from "react-icons/fa";
 import whiteLogo from "../assets/images/white_book.png";
 import whiteLogoRight from "../assets/images/white_book_right.png";
+import { BookData } from "../helpers/interfaces";
+import { getBookList } from "../services/BookService";
 
-const Home = (props: HomeProps) => {
-  const [bookResultList, setBookResultList] = useState(props.testData);
+const Home = () => {
+  const [bookResultList, setBookResultList] = useState<BookData[]>([]);
   const [searchValue, setSearchValue] = useState("");
 
   const [onlyReview, setOnlyReview] = React.useState(false);
@@ -29,21 +30,6 @@ const Home = (props: HomeProps) => {
       </Checkbox>
     </Container>
   );
-
-  const filterBookList = () => {
-    const newList = props.testData.filter((item) => {
-      const authorsMatch: boolean = item.authors
-        .join(" ")
-        .toLocaleLowerCase()
-        .includes(searchValue.toLocaleLowerCase());
-      return (
-        item.title
-          .toLocaleLowerCase()
-          .includes(searchValue.toLocaleLowerCase()) || authorsMatch
-      );
-    });
-    setBookResultList(newList);
-  };
 
   return (
     <React.Fragment>
@@ -104,7 +90,9 @@ const Home = (props: HomeProps) => {
             bg="brand.100"
             boxShadow="md"
             justifyContent="center"
-            onClick={filterBookList}
+            onClick={async () => {
+              setBookResultList(await getBookList(searchValue));
+            }}
           >
             <Icon as={FaSearch} w={7} h={7} mt="15px" color="white" />
           </Flex>

@@ -21,6 +21,7 @@ import { MdOutlineEmail } from "react-icons/md";
 
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { isAuthenticated, signIn } from "../services/AuthenticationService";
+import Loading from "../layouts/Loading";
 
 const Login = (props: { setAuthenticated: Function }) => {
   const location: any = useLocation();
@@ -98,15 +99,6 @@ const Login = (props: { setAuthenticated: Function }) => {
     </Container>
   ) : null;
 
-  const loadingScreen = (
-    <Box mt="2rem" className="lds-ring">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </Box>
-  );
-
   const loginButton = (
     <Button
       className="buttonBrandPrimary"
@@ -160,7 +152,7 @@ const Login = (props: { setAuthenticated: Function }) => {
             minH="1rem"
             sx={{ borderBottom: "0.2rem solid gray" }}
           ></Box>
-          <Box>{isLoading ? loadingScreen : loginForm}</Box>
+          <Box>{isLoading ? <Loading /> : loginForm}</Box>
 
           <Box>{isLoading ? null : loginButton}</Box>
         </Container>

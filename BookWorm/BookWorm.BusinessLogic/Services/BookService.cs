@@ -26,7 +26,7 @@ namespace BookWorm.BusinessLogic.Services
             }
         }
 
-        public async Task<IEnumerable<Book>> GetBookByIsbn(string isbn)
+        public async Task<Book> GetBookByIsbn(string isbn)
         {
             try
             {

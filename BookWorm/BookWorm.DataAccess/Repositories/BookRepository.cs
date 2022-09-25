@@ -22,7 +22,7 @@ namespace BookWorm.DataAccess.Repositories
             _client.DefaultRequestHeaders.Add("Authorization", _configuration["ApiKeys:IsbnDbKey"]);
         }
 
-        public async Task<IEnumerable<Book>> GetBookByTitleOrAuthorName(string searchQuery)
+        public async Task<IEnumerable<BusinessLogic.Data.Models.Book>> GetBookByTitleOrAuthorName(string searchQuery)
         {
             HttpResponseMessage response = await _client.GetAsync(@$"https://api2.isbndb.com/books/{searchQuery}");
             response.EnsureSuccessStatusCode();
@@ -31,11 +31,11 @@ namespace BookWorm.DataAccess.Repositories
 
             var resObj = JsonConvert.DeserializeObject<ISBNBookWrapper>(responseBody);
             
-            var result = new List<Book>();
+            var result = new List<BusinessLogic.Data.Models.Book>();
 
             foreach (var item in resObj.books)
             {
-                result.Add(new Book()
+                result.Add(new BusinessLogic.Data.Models.Book()
                 {
                     Title = item.title,
                     Authors = item.authors,
