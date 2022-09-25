@@ -13,18 +13,6 @@ export interface BookData {
   subjects?: string[];
 }
 
-export interface HomeProps {
-  testData: BookData[];
-}
-
-export interface ReviewData {
-  _id: string;
-  author: string;
-  text: string;
-  author_id: string;
-  points: number;
-}
-
 export interface LoginData {
   emailAddress: string;
   password: string;
@@ -46,5 +34,14 @@ export interface RegisterData {
 
 export interface BookDetails {
   book: BookData;
-  reviews: ReviewData[];
+  reviews: Review[];
+}
+
+export interface Review {
+  comment: string;
+  stars: number;
+  userId: string;
+  id: number;
+  bookId: string;
+  bookIsbn: string;
 }

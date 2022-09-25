@@ -48,5 +48,20 @@ namespace BookWorm.WebAPI.Controllers
             }
         }
 
+        [HttpPost("save")]
+        public async Task<IActionResult> SaveBook([FromQuery] string isbn)
+        {
+            if (isbn == null) return BadRequest("Please, provide all the required fields!");
+
+            try
+            {
+                await _bookService.SaveBookByIsbn(isbn);
+                return Ok();
+            }
+            catch (BookNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
     }
 }

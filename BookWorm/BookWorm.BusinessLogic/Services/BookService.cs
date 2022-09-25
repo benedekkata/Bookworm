@@ -38,5 +38,11 @@ namespace BookWorm.BusinessLogic.Services
                 throw new BookNotFoundException($"{e.Message}");
             }
         }
+
+        public async Task SaveBookByIsbn(string isbn)
+        {
+            var book = await GetBookByIsbn(isbn);
+            await _bookRepository.SaveBook(book);
+        }
     }
 }

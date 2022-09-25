@@ -1,13 +1,12 @@
 import React from "react";
-import BookDetail from "../components/BookDetail";
-import BookReview from "../components/BookReview";
-import { BookDetails } from "../helpers/interfaces";
+import BookReview from "../containers/BookReview";
+import BookDetail from "../containers/BookDetail";
 
-const BookDetailedView = (props: { data: BookDetails }) => {
+const BookDetailedView = () => {
   return (
     <React.Fragment>
-      <BookDetail book={props.data.book}></BookDetail>
-      <BookReview reviews={props.data.reviews}></BookReview>
+      <BookDetail></BookDetail>
+      <BookReview></BookReview>
     </React.Fragment>
   );
 };

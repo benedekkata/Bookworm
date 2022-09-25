@@ -1,9 +1,7 @@
 import React from "react";
 import Home from "../containers/HomeComponent";
-import { BookData, ReviewData } from "../helpers/interfaces";
-import { Navigate, Outlet, useLocation, useParams } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import BookDetailedView from "../layouts/BookDetailedView";
-import BookNotFound from "../components/BookNotFound";
 import Login from "../containers/Login";
 import Register from "../containers/Register";
 import PageNotFound from "../components/PageNotFound";

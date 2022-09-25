@@ -13,5 +13,7 @@ namespace BookWorm.DataAccess.Data
         }
 
         public DbSet<RefreshToken> RefreshToken { get; set; }
+        public DbSet<Review> Review { get; set; }
+        public DbSet<Book> Book { get; set; }
     }
 }

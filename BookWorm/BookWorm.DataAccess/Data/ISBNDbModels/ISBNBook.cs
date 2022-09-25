@@ -20,7 +20,6 @@
         public string binding { get; set; }
         public string language { get; set; }
         public string dimensions { get; set; }
-        public string related { get; set; }
         public string dewey_decimal { get; set; }
         public string excerpt { get; set; }
         public int pages { get; set; }

@@ -19,6 +19,16 @@ const Home = (props: HomeProps) => {
   const [searchValue, setSearchValue] = useState("");
 
   const [onlyReview, setOnlyReview] = React.useState(false);
+  const reviewCheckox = (
+    <Container textColor="white">
+      <Checkbox
+        isChecked={onlyReview}
+        onChange={(e) => setOnlyReview(e.target.checked)}
+      >
+        Only show reviewed by me
+      </Checkbox>
+    </Container>
+  );
 
   const filterBookList = () => {
     const newList = props.testData.filter((item) => {
@@ -99,14 +109,6 @@ const Home = (props: HomeProps) => {
             <Icon as={FaSearch} w={7} h={7} mt="15px" color="white" />
           </Flex>
         </Flex>
-        <Container textColor="white">
-          <Checkbox
-            isChecked={onlyReview}
-            onChange={(e) => setOnlyReview(e.target.checked)}
-          >
-            Only show reviewed by me
-          </Checkbox>
-        </Container>
       </Box>
       <BookList list={bookResultList} />,
     </React.Fragment>
