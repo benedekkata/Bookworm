@@ -6,5 +6,6 @@ namespace BookWorm.BusinessLogic.Data.Repositories
     {
         Task<IEnumerable<ReducedBook>> GetBookByTitleOrAuthorName(string searchQuery);
         Task<Book> GetBookByIsbn(string isbn);
+        Task SaveBook(Book book);
     }
 }

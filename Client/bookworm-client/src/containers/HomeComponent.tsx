@@ -14,27 +14,40 @@ import whiteLogo from "../assets/images/white_book.png";
 import whiteLogoRight from "../assets/images/white_book_right.png";
 import { BookData } from "../helpers/interfaces";
 import { getBookList } from "../services/BookService";
+import Loading from "../layouts/Loading";
+import { UnauthorizedError } from "../helpers/utils";
+import { useNavigate } from "react-router-dom";
+import { isAuthenticated } from "../services/AuthenticationService";
 
 const Home = () => {
   const [bookResultList, setBookResultList] = useState<BookData[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const loadingScreen = (
-    <Box mt="2rem" className="lds-ring">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </Box>
-  );
+  const navigate = useNavigate();
+
   const searchRes = <SearchResult list={bookResultList} />;
   const onClickSearch = async () => {
     setIsLoading(true);
-    setBookResultList(await getBookList(searchValue));
+    const list = await getBookList(searchValue).catch(
+      async (error: UnauthorizedError) => {
+        if (!(await isAuthenticated())) navigate("/login");
+      }
+    );
+    setBookResultList(list || []);
     setIsLoading(false);
   };
 
   const [onlyReview, setOnlyReview] = React.useState(false);
+  const reviewCheckox = (
+    <Container textColor="white">
+      <Checkbox
+        isChecked={onlyReview}
+        onChange={(e) => setOnlyReview(e.target.checked)}
+      >
+        Only show reviewed by me
+      </Checkbox>
+    </Container>
+  );
 
   return (
     <React.Fragment>
@@ -109,7 +122,7 @@ const Home = () => {
           </Checkbox>
         </Container>
       </Box>
-      <Box>{isLoading ? loadingScreen : searchRes}</Box>
+      <Box>{isLoading ? <Loading /> : searchRes}</Box>
     </React.Fragment>
   );
 };

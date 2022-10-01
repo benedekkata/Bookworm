@@ -7,12 +7,14 @@ import {
   Input,
   Stack,
   Image,
+  Text,
   InputGroup,
   InputLeftElement,
   Alert,
   AlertIcon,
   FormControl,
   FormErrorMessage,
+  Divider,
 } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
 import logo from "../assets/images/books.png";
@@ -25,6 +27,8 @@ import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import { isAuthenticated, signUp } from "../services/AuthenticationService";
 import { RegisterData } from "../helpers/interfaces";
 import { SubmitHandler, useForm } from "react-hook-form";
+import Loading from "../layouts/Loading";
+import { BadRequestError } from "../helpers/utils";
 
 const Register = (props: { setAuthenticated: Function }) => {
   const location: any = useLocation();
@@ -33,6 +37,7 @@ const Register = (props: { setAuthenticated: Function }) => {
   const [failedRegister, setFailedRegister] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
+  const [reason, setReason] = useState("");
 
   const {
     register,
@@ -42,7 +47,10 @@ const Register = (props: { setAuthenticated: Function }) => {
   } = useForm<RegisterData>();
   const onSubmit: SubmitHandler<RegisterData> = async (data) => {
     setIsLoading(true);
-    const isSuccess = await signUp(data).catch(() => setFailedRegister(true));
+    const isSuccess = await signUp(data).catch((error: BadRequestError) => {
+      setReason(error.message);
+      setFailedRegister(true);
+    });
     if (isSuccess) {
       setFailedRegister(false);
       navigate("/login");
@@ -202,19 +210,10 @@ const Register = (props: { setAuthenticated: Function }) => {
     <Container>
       <Alert status="error" my="0.5rem" borderRadius="2xl" textAlign="center">
         <AlertIcon />
-        Failed to register, please check your data and try again!
+        {reason}
       </Alert>
     </Container>
   ) : null;
-
-  const loadingScreen = (
-    <Box mt="2rem" className="lds-ring">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </Box>
-  );
 
   return (
     <Flex minH="41.3rem">
@@ -227,7 +226,7 @@ const Register = (props: { setAuthenticated: Function }) => {
             minH="1rem"
             sx={{ borderBottom: "0.2rem solid gray" }}
           ></Box>
-          <Box>{isLoading ? loadingScreen : regForm}</Box>
+          <Box>{isLoading ? <Loading /> : regForm}</Box>
         </Container>
       </Center>
       <Center w="40%" backgroundColor="brand.100">

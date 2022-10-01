@@ -1,6 +1,6 @@
 import { Box, Text, Container, Image, Flex, Icon } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { BookData } from "../helpers/interfaces";
+import { BookData, UnauthorizedError } from "../helpers/interfaces";
 
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -9,6 +9,8 @@ import { getBookByIsbn } from "../services/BookService";
 import BookNotFound from "../components/BookNotFound";
 
 import bookDefaultImg from "../assets/images/books.png";
+import Loading from "../layouts/Loading";
+import { isAuthenticated } from "../services/AuthenticationService";
 
 const SubjectChip = (props: { subject: string }) => {
   return (
@@ -28,11 +30,17 @@ const SubjectChip = (props: { subject: string }) => {
 
 const BookDetail = () => {
   const [book, setBook] = useState<BookData>();
+  const [bookNotFound, setBookNotFound] = useState(false);
   const { isbn } = useParams();
   useEffect(() => {
     getBookByIsbn(isbn || "")
       .then(setBook)
-      .catch();
+      .then(() => {
+        if (!book) setBookNotFound(true);
+      })
+      .catch(async (error: UnauthorizedError) => {
+        if (!(await isAuthenticated())) navigate("/login");
+      });
   }, []);
 
   const authors = book?.authors.join(" «» ");
@@ -43,7 +51,11 @@ const BookDetail = () => {
   const navigate = useNavigate();
   const synopsis = book?.synopsis?.replace(regex, "");
   return book === undefined ? (
-    <BookNotFound />
+    bookNotFound ? (
+      <BookNotFound />
+    ) : (
+      <Loading />
+    )
   ) : (
     <React.Fragment>
       <Box w="100%">

@@ -41,7 +41,13 @@ export interface RegisterData {
   username: string;
 }
 
-export interface BookDetails {
-  book: BookData;
-  reviews: ReviewData[];
+export interface Review {
+  id: number;
+  comment: string;
+  userId: string;
+  bookId: string;
+  bookIsbn: string;
+  stars: number;
 }
+
+export interface UnauthorizedError extends Error {}

@@ -49,6 +49,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
 builder.Services.AddScoped<BookService, BookService>();
+builder.Services.AddScoped<ReviewService, ReviewService>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<AuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 

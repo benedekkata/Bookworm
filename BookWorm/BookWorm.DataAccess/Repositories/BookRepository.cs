@@ -1,6 +1,8 @@
 ﻿using BookWorm.BusinessLogic.Data.Models;
 using BookWorm.BusinessLogic.Data.Repositories;
+using BookWorm.DataAccess.Data;
 using BookWorm.DataAccess.Data.JSONConverters;
+using BookWorm.DataAccess.Data.Models;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
@@ -10,11 +12,13 @@ namespace BookWorm.DataAccess.Repositories
     {
         private readonly IConfiguration _configuration;
         public readonly HttpClient _client;
+        private readonly ApplicationDbContext _context;
 
-        public BookRepository(IConfiguration configuration)
+        public BookRepository(IConfiguration configuration, ApplicationDbContext context)
         {
             _configuration = configuration;
             _client = new HttpClient();
+            _context = context;
             _client.DefaultRequestHeaders.Add("Authorization", _configuration["ApiKeys:IsbnDbKey"]);
         }
 
@@ -45,7 +49,7 @@ namespace BookWorm.DataAccess.Repositories
             return result;
         }
 
-        public async Task<Book> GetBookByIsbn(string isbn)
+        public async Task<BusinessLogic.Data.Models.Book> GetBookByIsbn(string isbn)
         {
             HttpResponseMessage response = await _client.GetAsync(@$"https://api2.isbndb.com/book/{isbn}");
             response.EnsureSuccessStatusCode();
@@ -53,7 +57,7 @@ namespace BookWorm.DataAccess.Repositories
             string responseBody = await response.Content.ReadAsStringAsync();
             var resObj = JsonConvert.DeserializeObject<ISBNSimpleBookWrapper>(responseBody);
 
-            var result = new Book()
+            var result = new BusinessLogic.Data.Models.Book()
             {
                 Title = resObj.book.title,
                 Authors = resObj.book.authors,
@@ -70,6 +74,31 @@ namespace BookWorm.DataAccess.Repositories
             };
 
             return result;
+        }
+
+        public async Task SaveBook(BusinessLogic.Data.Models.Book book)
+        {
+            var booksInDb = _context.Book.Where(b => (b.ISBN == book.Isbn || b.ISBN13 == book.Isbn13)).ToList();
+            if (booksInDb.Count() == 0)
+            {
+                _context.Book.Add(new Data.Models.Book
+                {
+                    DatePublished = book.DatePublished,
+                    ImageURL = book.Image,
+                    Title = book.Title,
+                    ISBN = book.Isbn,
+                    ISBN13 = book.Isbn13,
+                    Pages = book.Pages,
+                    Language = book.Language,
+                    Publisher = book.Publisher,
+                    Synopsis = book.Synopsis,
+                    Overview = book.Overview,
+                    Subjects = book.Subjects?.Select(s => new Subject { Name = s }).ToList() ?? new List<Subject>(),
+                    Authors = book.Authors?.Select(a => new Author { Name = a }).ToList() ?? new List<Author>(),
+                });
+
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

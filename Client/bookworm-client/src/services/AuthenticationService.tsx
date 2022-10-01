@@ -1,28 +1,11 @@
 import { API_AUTH } from "../helpers/constants";
 import { LoginData, LoginResponse, RegisterData } from "../helpers/interfaces";
+import { BadRequestError } from "../helpers/utils";
 
 export const isAuthenticated = async (): Promise<boolean> => {
   const token: string | null = localStorage.getItem("token");
-  //check if the token is there and valid
+  //check if the token is there and valid (trying to refresh the token too if there is any)
   if (!token || !(await isValidAsync(token))) return false;
-
-  //check expires at if expired but the refresh token is there ask for a newOne
-  const expiresAt: string | null = localStorage.getItem("expiresAt");
-  if (expiresAt) {
-    const date: number = Date.parse(expiresAt);
-    if (date <= Date.now()) {
-      const refreshToken: string | null = localStorage.getItem("refreshToken");
-      if (refreshToken) {
-        const refreshed: boolean = await refreshTokenAsync(
-          token,
-          refreshToken
-        ).catch();
-        if (!refreshed) return false;
-      } else {
-        return false;
-      }
-    }
-  }
   return true;
 };
 
@@ -40,7 +23,14 @@ export const signUp = async (body: RegisterData) => {
     requestOptions
   );
 
-  return response.status === 200;
+  if (response.status === 200) {
+    return true;
+  }
+  if (response.status === 400) {
+    const msg = await response.text();
+    throw new BadRequestError(msg);
+  }
+  return false;
 };
 
 export const signIn = async (body: LoginData) => {
@@ -90,7 +80,10 @@ const isValidAsync = async (token: string): Promise<boolean> => {
         token,
         refreshToken
       ).catch();
-      if (refreshed) return true;
+      if (refreshed) {
+        console.log("tesztttt");
+        return true;
+      }
     }
   }
   return false;

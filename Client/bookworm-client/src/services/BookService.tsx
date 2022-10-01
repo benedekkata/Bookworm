@@ -1,5 +1,6 @@
 import { API_BOOK } from "../helpers/constants";
 import { BookData } from "../helpers/interfaces";
+import { UnauthorizedError } from "../helpers/utils";
 
 export const getBookList = async (query: string): Promise<BookData[]> => {
   const token: string | null = localStorage.getItem("token");
@@ -18,6 +19,9 @@ export const getBookList = async (query: string): Promise<BookData[]> => {
   );
   if (response.status === 200) {
     res = await response.json();
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
   }
   return res;
 };
@@ -41,7 +45,9 @@ export const getBookByIsbn = async (
   );
   if (response.status === 200) {
     const res: BookData = await response.json();
-    console.log(res);
     return res;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
   }
 };
