@@ -1,5 +1,6 @@
 import { API_AUTH } from "../helpers/constants";
 import { LoginData, LoginResponse, RegisterData } from "../helpers/interfaces";
+import { BadRequestError } from "../helpers/utils";
 
 export const isAuthenticated = async (): Promise<boolean> => {
   const token: string | null = localStorage.getItem("token");
@@ -22,7 +23,14 @@ export const signUp = async (body: RegisterData) => {
     requestOptions
   );
 
-  return response.status === 200;
+  if (response.status === 200) {
+    return true;
+  }
+  if (response.status === 400) {
+    const msg = await response.text();
+    throw new BadRequestError(msg);
+  }
+  return false;
 };
 
 export const signIn = async (body: LoginData) => {

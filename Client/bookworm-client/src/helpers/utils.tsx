@@ -14,6 +14,18 @@ export class UnauthorizedError extends Error {
   }
 }
 
+export class BadRequestError extends Error {
+  constructor(msg: string) {
+    super(msg);
+
+    Object.setPrototypeOf(this, BadRequestError.prototype);
+  }
+
+  getMessage() {
+    return this.message;
+  }
+}
+
 export const PrivateRoute = () => {
   const [isAuthenticated, setAuthenticated] = useState(true);
   useEffect(() => {
