@@ -51,10 +51,7 @@ export const signIn = async (body: LoginData) => {
 };
 
 export const signOut = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("refreshToken");
-  localStorage.removeItem("userId");
-  localStorage.removeItem("expiresAt");
+  localStorage.clear();
 };
 
 const isValidAsync = async (token: string): Promise<boolean> => {

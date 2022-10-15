@@ -77,5 +77,12 @@ namespace BookWorm.DataAccess.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public bool UserHasReviewOnBook(string uid, string isbn)
+        {
+            var booksInDb = _context.Book.Where(b => (b.ISBN == isbn || b.ISBN13 == isbn)).FirstOrDefault();
+            if (booksInDb == null) return false;
+            return _context.Review.Where(r => r.UserId == uid && r.BookId == booksInDb.Id).ToList().Count > 0;
+        }
     }
 }

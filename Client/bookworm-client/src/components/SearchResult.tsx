@@ -73,20 +73,15 @@ const ListItem = (props: { key: string; value: BookData }) => {
 
 const SearchResult = (props: { list: BookData[] }) => {
   const numbers = props.list;
-  const textResults =
-    props.list.length === 0 ? null : <Text fontSize="3xl">Results</Text>;
+
   const listItems = numbers.map((book) => (
     <ListItem key={book.isbn13.toString()} value={book} />
   ));
+
   return (
-    <Box w="100%">
-      <Box w="100%" my="5">
-        {textResults}
-      </Box>
-      <Container maxW="container.lg" alignItems="center">
-        {listItems}
-      </Container>
-    </Box>
+    <Container maxW="container.lg" alignItems="center">
+      {listItems}
+    </Container>
   );
 };
 
