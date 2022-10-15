@@ -14,5 +14,6 @@ namespace BookWorm.BusinessLogic.Data.Repositories
         IEnumerable<Review> GetReview(string isbn);
         void RemoveReview(int id);
         void EditReview(ReviewRequest reviewRequest);
+        bool UserHasReviewOnBook(string uid, string isbn);
     }
 }

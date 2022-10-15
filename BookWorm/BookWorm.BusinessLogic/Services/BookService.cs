@@ -1,4 +1,5 @@
-﻿using BookWorm.BusinessLogic.Data.Models;
+﻿using BookWorm.BusinessLogic.Data;
+using BookWorm.BusinessLogic.Data.Models;
 using BookWorm.BusinessLogic.Data.Repositories;
 using BookWorm.BusinessLogic.Exceptions;
 
@@ -7,22 +8,45 @@ namespace BookWorm.BusinessLogic.Services
     public class BookService
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IReviewRepository _reviewRepository;
 
-        public BookService(IBookRepository bookRepository)
+        public BookService(IBookRepository bookRepository, IReviewRepository reviewRepository)
         {
             _bookRepository = bookRepository;
+            _reviewRepository = reviewRepository;
         }
 
-        public async Task<IEnumerable<ReducedBook>> GetBookByTitleOrAuthorName(string searchQuery)
+        public async Task<PaginatedReducedBook> GetBookByTitleOrAuthorName(string searchQuery, int? page = 0, int? minYear = null, int? maxYear = null, bool? onlyReview = null, string? uid = null, string? order = null)
         {
             try
             {
                 var bookList = await _bookRepository.GetBookByTitleOrAuthorName(searchQuery);
-                return bookList;
+                if (minYear != null) bookList = bookList.Where(b => int.Parse(b.DatePublished) >= minYear);
+                if (maxYear != null) bookList = bookList.Where(b => int.Parse(b.DatePublished) <= maxYear);
+                if (onlyReview != null && uid != null) bookList = bookList.Where(b => _reviewRepository.UserHasReviewOnBook(uid, b.Isbn13 != null ? b.Isbn13 : b.Isbn));
+                if (order != null) bookList = SetListOrder(bookList, order);
+                int totalPage = (int) Math.Ceiling(bookList.Count() / 10.0);
+                bookList = bookList.Skip(page.Value * 10).Take(10);
+
+                return new PaginatedReducedBook() { Books = bookList, CurrentPage = page.Value, ItemPerPage= 10, Total = totalPage};
             }
             catch (HttpRequestException e)
             {
                 throw new BookNotFoundException($"{e.Message}");
+            }
+        }
+
+        private IEnumerable<ReducedBook> SetListOrder(IEnumerable<ReducedBook> bookList, string order)
+        {
+            switch (order)
+            {
+                case "abc_asc": return bookList.OrderBy(b => b.Title);
+                case "abc_desc": return bookList.OrderByDescending(b => b.Title);
+                case "pd_asc": return bookList.OrderBy(b => b.DatePublished);
+                case "pd_desc": return bookList.OrderByDescending(b => b.DatePublished);
+                case "isbn_asc": return bookList.OrderBy(b => b.Isbn13 == null ? b.Isbn13 : b.Isbn);
+                case "isbn_desc": return bookList.OrderByDescending(b => b.Isbn13 == null ? b.Isbn13 : b.Isbn);
+                default: return bookList;
             }
         }
 

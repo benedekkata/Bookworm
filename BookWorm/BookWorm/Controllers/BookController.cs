@@ -17,13 +17,13 @@ namespace BookWorm.WebAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetBookByTitleOrAuthorName([FromQuery] string searchQuery)
+        public async Task<IActionResult> GetBookByTitleOrAuthorName([FromQuery] string searchQuery, [FromQuery] int? page = 0, [FromQuery] int? minYear = null, [FromQuery] int? maxYear=null, [FromQuery] bool? onlyReview=null, [FromQuery] string? uid = null, [FromQuery] string? order = null)
         {
             if(searchQuery == null) return BadRequest("Please, provide all the required fields!");
 
             try
             {
-                var result = await _bookService.GetBookByTitleOrAuthorName(searchQuery);
+                var result = await _bookService.GetBookByTitleOrAuthorName(searchQuery, page, minYear, maxYear, onlyReview, uid, order);
                 return Ok(result);
             }
             catch (BookNotFoundException e)

@@ -1,3 +1,6 @@
+import internal from "stream";
+import { NullLiteral } from "typescript";
+
 export interface BookData {
   title: string;
   isbn: string;
@@ -51,3 +54,20 @@ export interface Review {
 }
 
 export interface UnauthorizedError extends Error {}
+
+export interface SearchDetails {
+  bookList: BookData[];
+  searchValue: string;
+  minYear?: Date;
+  maxYear?: Date;
+  onlyReview?: boolean;
+  order?: string;
+  page: number;
+}
+
+export interface PaginatedBookData {
+  books: BookData[];
+  currentPage: number;
+  itemPerPage: number;
+  total: number;
+}
