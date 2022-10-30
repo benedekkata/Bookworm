@@ -5,6 +5,7 @@ import BookDetailedView from "../layouts/BookDetailedView";
 import Login from "../containers/Login";
 import Register from "../containers/Register";
 import PageNotFound from "../components/PageNotFound";
+import UserSettings from "../containers/UserSettings";
 
 export const HomePage = () => {
   return <Home></Home>;
@@ -42,4 +43,8 @@ export const RequireAuth = (props: { isAuthenticated: Boolean }) => {
 
 export const PageNotFoundPage = () => {
   return <PageNotFound />;
+};
+
+export const UserSettingsPage = () => {
+  return <UserSettings />;
 };

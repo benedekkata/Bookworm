@@ -71,3 +71,18 @@ export interface PaginatedBookData {
   itemPerPage: number;
   total: number;
 }
+
+export interface UserData {
+  displayedName: string;
+  userName: string;
+  email: string;
+  profileImgUrl?: string;
+  sex?: string;
+  age?: number;
+}
+
+export interface PasswordChange {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}

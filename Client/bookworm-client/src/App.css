@@ -19,6 +19,15 @@ button.buttonBrandPrimary:hover {
   width: 75%;
 }
 
+.w100 {
+  width: 100%;
+}
+
+.centered-form{
+  display: flex;
+  justify-content: center;
+}
+
 @media screen and (min-width: 600px) {
   #detail_btn_margin {
     margin-right: -3%;

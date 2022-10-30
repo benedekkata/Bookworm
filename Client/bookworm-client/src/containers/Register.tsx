@@ -7,14 +7,12 @@ import {
   Input,
   Stack,
   Image,
-  Text,
   InputGroup,
   InputLeftElement,
   Alert,
   AlertIcon,
   FormControl,
   FormErrorMessage,
-  Divider,
 } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
 import logo from "../assets/images/books.png";
@@ -23,15 +21,14 @@ import { MdOutlineEmail } from "react-icons/md";
 import { FiUser } from "react-icons/fi";
 import { AiOutlineStar } from "react-icons/ai";
 
-import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
-import { isAuthenticated, signUp } from "../services/AuthenticationService";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { signUp } from "../services/AuthenticationService";
 import { RegisterData } from "../helpers/interfaces";
 import { SubmitHandler, useForm } from "react-hook-form";
 import Loading from "../layouts/Loading";
 import { BadRequestError } from "../helpers/utils";
 
 const Register = (props: { setAuthenticated: Function }) => {
-  const location: any = useLocation();
   const navigate = useNavigate();
 
   const [failedRegister, setFailedRegister] = useState(false);

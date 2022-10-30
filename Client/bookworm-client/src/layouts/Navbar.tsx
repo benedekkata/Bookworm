@@ -26,7 +26,12 @@ const Navbar = (props: {
       </Center>
 
       <Spacer />
-      <Square ml="3">
+      <Square
+        ml="3"
+        onClick={() => {
+          navigate("/settings");
+        }}
+      >
         <Icon as={BiUser} w={8} h={8} color="white" />
       </Square>
       <Square
