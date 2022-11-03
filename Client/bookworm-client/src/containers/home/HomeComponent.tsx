@@ -22,11 +22,7 @@ import { FaSearch, FaSort } from "react-icons/fa";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
 import whiteLogo from "../../assets/images/white_book.png";
 import whiteLogoRight from "../../assets/images/white_book_right.png";
-import {
-  BookData,
-  PaginatedBookData,
-  SearchDetails,
-} from "../../helpers/interfaces";
+import { BookData, SearchDetails } from "../../helpers/interfaces";
 import {
   getBookList,
   readSearchDetails,
@@ -94,7 +90,7 @@ const Home = () => {
     });
   }, [onClickSearch]);
 
-  var buttons = [];
+  let buttons = [];
   for (let i = 0; i < maxPage; i++) {
     buttons.push(
       <Button

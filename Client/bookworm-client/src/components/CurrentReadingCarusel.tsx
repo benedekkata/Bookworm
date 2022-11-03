@@ -9,15 +9,14 @@ import {
   WrapItem,
   Divider,
 } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   AiOutlineArrowLeft,
   AiOutlineArrowRight,
   AiOutlineCloseCircle,
 } from "react-icons/ai";
-import { FiEdit } from "react-icons/fi";
 import { MdDone } from "react-icons/md";
-import { BookData, CaruselProps, ReadingRecord } from "../helpers/interfaces";
+import { CaruselProps } from "../helpers/interfaces";
 
 const CurrentReadingCarusel = (props: CaruselProps) => {
   const [page, setPage] = useState(1);

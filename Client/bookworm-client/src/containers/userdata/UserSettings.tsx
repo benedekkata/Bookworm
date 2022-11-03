@@ -1,13 +1,4 @@
-import {
-  Box,
-  Image,
-  Container,
-  Flex,
-  WrapItem,
-  Avatar,
-  Button,
-  Divider,
-} from "@chakra-ui/react";
+import { Image, Flex } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import whiteLogo from "../../assets/images/white_book.png";

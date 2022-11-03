@@ -50,12 +50,10 @@ const BookDetail = () => {
   const regex = /<.*?>/gi;
   const navigate = useNavigate();
   const synopsis = book?.synopsis?.replace(regex, "");
+  const bookNotFoundView = bookNotFound ? <BookNotFound /> : <Loading />;
+
   return book === undefined ? (
-    bookNotFound ? (
-      <BookNotFound />
-    ) : (
-      <Loading />
-    )
+    <React.Fragment>{bookNotFoundView}</React.Fragment>
   ) : (
     <React.Fragment>
       <Box w="100%">

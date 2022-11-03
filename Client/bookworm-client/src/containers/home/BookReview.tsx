@@ -36,7 +36,7 @@ const ReviewItem = (props: {
   modify: Function;
   edit: Function;
 }) => {
-  var stars = [];
+  let stars = [];
   const { isbn } = useParams();
   const normalizedPoints: number =
     Math.abs(props.review.stars) > 5 ? 5 : Math.abs(props.review.stars);

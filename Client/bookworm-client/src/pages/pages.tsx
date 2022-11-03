@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Home from "../containers/home/HomeComponent";
-import { Navigate, Outlet, useLocation, useParams } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import BookDetailedView from "../layouts/BookDetailedView";
 import Login from "../containers/authentication/Login";
 import Register from "../containers/authentication/Register";

@@ -1,8 +1,7 @@
 import { Box, Flex, Image, Text, Icon } from "@chakra-ui/react";
 
 import React from "react";
-import { MdOutlineOpenInNew } from "react-icons/md";
-import { BookData, PrevReadingListProps } from "../helpers/interfaces";
+import { PrevReadingListProps } from "../helpers/interfaces";
 import bookDefaultImg from "../assets/images/books.png";
 import { FiEdit } from "react-icons/fi";
 

@@ -1,6 +1,4 @@
 import {
-  Button,
-  Image,
   Avatar,
   Icon,
   Text,
