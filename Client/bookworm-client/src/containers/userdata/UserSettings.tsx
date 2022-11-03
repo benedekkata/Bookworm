@@ -10,13 +10,13 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import whiteLogo from "../assets/images/white_book.png";
-import whiteLogoRight from "../assets/images/white_book_right.png";
-import UserDataCard from "../components/UserDataCard";
-import UserDataEditForm from "../components/UserDataEditForm";
-import { UnauthorizedError, UserData } from "../helpers/interfaces";
-import { isAuthenticated } from "../services/AuthenticationService";
-import { getUserSettings } from "../services/UserService";
+import whiteLogo from "../../assets/images/white_book.png";
+import whiteLogoRight from "../../assets/images/white_book_right.png";
+import UserDataCard from "./UserDataCard";
+import UserDataEditForm from "./UserDataEditForm";
+import { UnauthorizedError, UserData } from "../../helpers/interfaces";
+import { isAuthenticated } from "../../services/AuthenticationService";
+import { getUserSettings } from "../../services/UserService";
 
 const UserSettings = () => {
   const [userData, setUserData] = useState<UserData>();

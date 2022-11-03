@@ -19,18 +19,15 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
-import { AiOutlineStar } from "react-icons/ai";
-import { BiKey } from "react-icons/bi";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { FiUser } from "react-icons/fi";
 import { MdOutlineEmail } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import Login from "../containers/Login";
-import { UserData } from "../helpers/interfaces";
-import { BadRequestError, UnauthorizedError } from "../helpers/utils";
-import Loading from "../layouts/Loading";
-import { isAuthenticated } from "../services/AuthenticationService";
-import { updateUserSettings } from "../services/UserService";
+import { UserData } from "../../helpers/interfaces";
+import { BadRequestError, UnauthorizedError } from "../../helpers/utils";
+import Loading from "../../layouts/Loading";
+import { isAuthenticated } from "../../services/AuthenticationService";
+import { updateUserSettings } from "../../services/UserService";
 
 const UserDataEditForm = (props: {
   userData: UserData | undefined;

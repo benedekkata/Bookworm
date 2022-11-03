@@ -17,31 +17,30 @@ import {
   MenuDivider,
   MenuGroup,
 } from "@chakra-ui/react";
-import SearchResult from "../components/SearchResult";
+import SearchResult from "../../components/SearchResult";
 import { FaSearch, FaSort } from "react-icons/fa";
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from "react-icons/ai";
-import whiteLogo from "../assets/images/white_book.png";
-import whiteLogoRight from "../assets/images/white_book_right.png";
+import whiteLogo from "../../assets/images/white_book.png";
+import whiteLogoRight from "../../assets/images/white_book_right.png";
 import {
   BookData,
   PaginatedBookData,
   SearchDetails,
-} from "../helpers/interfaces";
+} from "../../helpers/interfaces";
 import {
   getBookList,
   readSearchDetails,
   saveSearchDetails,
-} from "../services/BookService";
-import Loading from "../layouts/Loading";
-import { UnauthorizedError } from "../helpers/utils";
+} from "../../services/BookService";
+import Loading from "../../layouts/Loading";
+import { UnauthorizedError } from "../../helpers/utils";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated } from "../services/AuthenticationService";
+import { isAuthenticated } from "../../services/AuthenticationService";
 import { MdFilterListAlt } from "react-icons/md";
-
 import { AiOutlineDelete } from "react-icons/ai";
 import { BiSortDown, BiSortUp } from "react-icons/bi";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
-import { datePcikerConfig } from "../config/GeneralConfig";
+import { datePcikerConfig } from "../../config/GeneralConfig";
 
 const Home = () => {
   //states

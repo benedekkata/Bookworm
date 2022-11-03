@@ -24,11 +24,11 @@ import {
   getReviews,
   removeReviewDb,
   sendReview,
-} from "../services/ReviewService";
+} from "../../services/ReviewService";
 import { useNavigate, useParams } from "react-router-dom";
-import { Review, UnauthorizedError } from "../helpers/interfaces";
-import Loading from "../layouts/Loading";
-import { isAuthenticated } from "../services/AuthenticationService";
+import { Review, UnauthorizedError } from "../../helpers/interfaces";
+import Loading from "../../layouts/Loading";
+import { isAuthenticated } from "../../services/AuthenticationService";
 
 const ReviewItem = (props: {
   key: string;

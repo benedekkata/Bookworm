@@ -24,11 +24,11 @@ import {
   PasswordChange,
   UnauthorizedError,
   UserData,
-} from "../helpers/interfaces";
-import { BadRequestError } from "../helpers/utils";
-import Loading from "../layouts/Loading";
-import { isAuthenticated } from "../services/AuthenticationService";
-import { changePassword } from "../services/UserService";
+} from "../../helpers/interfaces";
+import { BadRequestError } from "../../helpers/utils";
+import Loading from "../../layouts/Loading";
+import { isAuthenticated } from "../../services/AuthenticationService";
+import { changePassword } from "../../services/UserService";
 
 const UserDataCard = (props: {
   userData: UserData | undefined;

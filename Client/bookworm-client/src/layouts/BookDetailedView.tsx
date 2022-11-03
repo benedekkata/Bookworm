@@ -1,6 +1,6 @@
 import React from "react";
-import BookDetail from "../containers/BookDetail";
-import BookReview from "../containers/BookReview";
+import BookDetail from "../containers/home/BookDetail";
+import BookReview from "../containers/home/BookReview";
 
 const BookDetailedView = () => {
   return (

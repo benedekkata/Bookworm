@@ -15,18 +15,18 @@ import {
   FormErrorMessage,
 } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
-import logo from "../assets/images/books.png";
+import logo from "../../assets/images/books.png";
 import { BiLogInCircle, BiKey } from "react-icons/bi";
 import { MdOutlineEmail } from "react-icons/md";
 import { FiUser } from "react-icons/fi";
 import { AiOutlineStar } from "react-icons/ai";
 
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { signUp } from "../services/AuthenticationService";
-import { RegisterData } from "../helpers/interfaces";
+import { signUp } from "../../services/AuthenticationService";
+import { RegisterData } from "../../helpers/interfaces";
 import { SubmitHandler, useForm } from "react-hook-form";
-import Loading from "../layouts/Loading";
-import { BadRequestError } from "../helpers/utils";
+import Loading from "../../layouts/Loading";
+import { BadRequestError } from "../../helpers/utils";
 
 const Register = (props: { setAuthenticated: Function }) => {
   const navigate = useNavigate();

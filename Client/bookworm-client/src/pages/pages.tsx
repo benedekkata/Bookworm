@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Home from "../containers/HomeComponent";
+import Home from "../containers/home/HomeComponent";
 import { Navigate, Outlet, useLocation, useParams } from "react-router-dom";
 import BookDetailedView from "../layouts/BookDetailedView";
-import Login from "../containers/Login";
-import Register from "../containers/Register";
+import Login from "../containers/authentication/Login";
+import Register from "../containers/authentication/Register";
 import PageNotFound from "../components/PageNotFound";
-import UserSettings from "../containers/UserSettings";
-import MyPageComponent from "../containers/MyPageComponent";
+import UserSettings from "../containers/userdata/UserSettings";
+import MyPageComponent from "../containers/mypage/MyPageComponent";
 
 export const HomePage = () => {
   return <Home></Home>;

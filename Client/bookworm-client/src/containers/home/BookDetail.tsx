@@ -1,16 +1,16 @@
 import { Box, Text, Container, Image, Flex, Icon } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { BookData, UnauthorizedError } from "../helpers/interfaces";
+import { BookData, UnauthorizedError } from "../../helpers/interfaces";
 
 import { useNavigate, useParams } from "react-router-dom";
 
 import { MdOutlineSave, MdArrowBack } from "react-icons/md";
-import { getBookByIsbn } from "../services/BookService";
-import BookNotFound from "../components/BookNotFound";
+import { getBookByIsbn } from "../../services/BookService";
+import BookNotFound from "../../components/BookNotFound";
 
-import bookDefaultImg from "../assets/images/books.png";
-import Loading from "../layouts/Loading";
-import { isAuthenticated } from "../services/AuthenticationService";
+import bookDefaultImg from "../../assets/images/books.png";
+import Loading from "../../layouts/Loading";
+import { isAuthenticated } from "../../services/AuthenticationService";
 
 const SubjectChip = (props: { subject: string }) => {
   return (

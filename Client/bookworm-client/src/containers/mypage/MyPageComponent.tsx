@@ -17,10 +17,10 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { FiEdit } from "react-icons/fi";
-import CurrentReadingCarusel from "../components/CurrentReadingCarusel";
-import PrevReadingItem from "../components/PrevReadingItem";
-import { MyPageDataProps } from "../helpers/interfaces";
-import { getMyPageData } from "../services/MyPageDataService";
+import CurrentReadingCarusel from "../../components/CurrentReadingCarusel";
+import PrevReadingItem from "../../components/PrevReadingItem";
+import { MyPageDataProps } from "../../helpers/interfaces";
+import { getMyPageData } from "../../services/MyPageDataService";
 
 const MyPageComponent = () => {
   const [myPageData, setMyPageData] = useState<MyPageDataProps | undefined>();

@@ -15,13 +15,13 @@ import {
   FormControl,
   FormErrorMessage,
 } from "@chakra-ui/react";
-import logo from "../assets/images/books.png";
+import logo from "../../assets/images/books.png";
 import { BiLogInCircle, BiKey } from "react-icons/bi";
 import { MdOutlineEmail } from "react-icons/md";
 
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
-import { isAuthenticated, signIn } from "../services/AuthenticationService";
-import Loading from "../layouts/Loading";
+import { isAuthenticated, signIn } from "../../services/AuthenticationService";
+import Loading from "../../layouts/Loading";
 
 const Login = (props: { setAuthenticated: Function }) => {
   const location: any = useLocation();
