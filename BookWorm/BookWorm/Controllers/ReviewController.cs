@@ -45,6 +45,10 @@ namespace BookWorm.WebAPI.Controllers
             {
                 return NotFound();
             }
+            catch (BookNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpPut("edit")]

@@ -68,5 +68,12 @@ namespace BookWorm.BusinessLogic.Services
             var book = await GetBookByIsbn(isbn);
             await _bookRepository.SaveBook(book);
         }
+
+        public async Task<Book> GetBookById(string bookId)
+        {
+            var book =  await _bookRepository.GetBookById(bookId);
+            if (book == null) throw new BookNotFoundException($"Book with id: {bookId} is not found");
+            else return book;
+        }
     }
 }

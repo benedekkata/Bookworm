@@ -1,5 +1,6 @@
 ﻿using BookWorm.BusinessLogic.Data.Models;
 using BookWorm.BusinessLogic.Data.Repositories;
+using BookWorm.BusinessLogic.Exceptions;
 using BookWorm.DataAccess.Data;
 using BookWorm.DataAccess.Data.JSONConverters;
 using BookWorm.DataAccess.Data.Models;
@@ -76,12 +77,12 @@ namespace BookWorm.DataAccess.Repositories
             return result;
         }
 
-        public async Task SaveBook(BusinessLogic.Data.Models.Book book)
+        public async Task<string> SaveBook(BusinessLogic.Data.Models.Book book)
         {
             var booksInDb = _context.Book.Where(b => (b.ISBN == book.Isbn || b.ISBN13 == book.Isbn13)).ToList();
             if (booksInDb.Count() == 0)
             {
-                _context.Book.Add(new Data.Models.Book
+                var newBook = new Data.Models.Book
                 {
                     DatePublished = book.DatePublished,
                     ImageURL = book.Image,
@@ -95,10 +96,41 @@ namespace BookWorm.DataAccess.Repositories
                     Overview = book.Overview,
                     Subjects = book.Subjects?.Select(s => new Subject { Name = s }).ToList() ?? new List<Subject>(),
                     Authors = book.Authors?.Select(a => new Author { Name = a }).ToList() ?? new List<Author>(),
-                });
+                };
+                _context.Book.Add(newBook);
 
                 await _context.SaveChangesAsync();
+
+                return newBook.Id;
             }
+
+            return booksInDb[0].Id;
+        }
+
+        public async Task<BusinessLogic.Data.Models.Book> GetBookById(string bookId)
+        {
+            var book = _context.Book.Where(b => b.Id == bookId).FirstOrDefault();
+
+            if (book == null) return null;
+
+            var result = new BusinessLogic.Data.Models.Book()
+            {
+                Title = book.Title,
+                Authors = book.Authors.Select(a => a.Name).ToArray(),
+                Image = book.ImageURL,
+                Isbn = book.ISBN,
+                Isbn13 = book.ISBN13,
+                Pages = book.Pages,
+                DatePublished = book.DatePublished,
+                Publisher = book.Publisher,
+                Synopsis = book.Synopsis,
+                Overview = book.Overview,
+                Subjects = book.Subjects.Select(s => s.Name).ToArray(),
+                Language = book.Language,
+                Id=book.Id,
+            };
+
+            return result;
         }
     }
 }

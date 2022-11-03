@@ -86,3 +86,37 @@ export interface PasswordChange {
   newPassword: string;
   confirmPassword: string;
 }
+
+export interface ReadingRecord {
+  bookId: string;
+  userId: string;
+  startTime?: string;
+  endTime?: string;
+  isMyCopy: boolean;
+  isCurrentReading: boolean;
+}
+
+export interface MyPageData {
+  userId: string;
+  displayName: string;
+  description: string;
+  img: string;
+  likes: string[];
+  readings: ReadingRecord[];
+}
+
+export interface CaruselProps {
+  currentBooks: BookData[];
+  currentReadings: ReadingRecord[];
+}
+
+export interface PrevReadingListProps {
+  prevBooks: BookData[];
+  prevReadings: ReadingRecord[];
+}
+
+export interface MyPageDataProps {
+  currentReadingList: CaruselProps;
+  data: MyPageData;
+  prevReadingList: PrevReadingListProps;
+}

@@ -75,6 +75,29 @@ export const getBookByIsbn = async (
   }
 };
 
+export const getBookById = async (
+  id: string
+): Promise<BookData | undefined> => {
+  const token: string | null = localStorage.getItem("token");
+
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(`${API_BOOK}/${id}`, requestOptions);
+  if (response.status === 200) {
+    const res: BookData = await response.json();
+    return res;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+};
+
 export const saveSearchDetails = (data: SearchDetails) => {
   localStorage.setItem("bookList", JSON.stringify(data.bookList));
   localStorage.setItem("searchValue", data.searchValue);

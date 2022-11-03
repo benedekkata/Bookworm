@@ -6,6 +6,7 @@ import Login from "../containers/Login";
 import Register from "../containers/Register";
 import PageNotFound from "../components/PageNotFound";
 import UserSettings from "../containers/UserSettings";
+import MyPageComponent from "../containers/MyPageComponent";
 
 export const HomePage = () => {
   return <Home></Home>;
@@ -16,7 +17,7 @@ export const UsersPage = () => {
 };
 
 export const MyPagePage = () => {
-  return <div>MYPAGE</div>;
+  return <MyPageComponent></MyPageComponent>;
 };
 
 export const BookDetailPage = () => {

@@ -1,5 +1,6 @@
 ﻿using BookWorm.BusinessLogic.Data.Models;
 using BookWorm.BusinessLogic.Data.Repositories;
+using BookWorm.BusinessLogic.Exceptions;
 using BookWorm.BusinessLogic.Models;
 using System;
 using System.Collections.Generic;
@@ -22,9 +23,16 @@ namespace BookWorm.BusinessLogic.Services
 
         public async Task SaveReview(ReviewRequest reviewRequest)
         {
-            var book = await _bookRepository.GetBookByIsbn(reviewRequest.bookIsbn);
-            await _bookRepository.SaveBook(book);
-            await _reviewRepository.SaveReview(reviewRequest);
+            try
+            {
+                var book = await _bookRepository.GetBookByIsbn(reviewRequest.bookIsbn);
+                await _bookRepository.SaveBook(book);
+                await _reviewRepository.SaveReview(reviewRequest);
+            }
+            catch (HttpRequestException e)
+            {
+                throw new BookNotFoundException($"{e.Message}");
+            }
         }
 
         public IEnumerable<Review> GetReviews(string isbn)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookWorm.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220505185623_AddingReviews")]
-    partial class AddingReviews
+    [Migration("20221031152200_ResetDb")]
+    partial class ResetDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -30,6 +30,9 @@ namespace BookWorm.DataAccess.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Age")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -70,7 +73,13 @@ namespace BookWorm.DataAccess.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfileImgUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sex")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -91,6 +100,120 @@ namespace BookWorm.DataAccess.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.Book", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("BookShelfID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DatePublished")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ISBN")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ISBN13")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageURL")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Language")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Overview")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Pages")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Publisher")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Synopsis")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookShelfID");
+
+                    b.ToTable("Book");
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.BookShelf", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<string>("IconURL")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsWhislist")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("BookShelf");
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.ReadingRecord", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<string>("BookId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCurrentReading")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMyCopy")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("ReadingRecord");
                 });
 
             modelBuilder.Entity("BookWorm.DataAccess.Data.Models.RefreshToken", b =>
@@ -137,6 +260,10 @@ namespace BookWorm.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("BookId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Comment")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -150,9 +277,34 @@ namespace BookWorm.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BookId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Review");
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.UserAppData", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserAppData");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -288,6 +440,91 @@ namespace BookWorm.DataAccess.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.Book", b =>
+                {
+                    b.HasOne("BookWorm.DataAccess.Data.Models.BookShelf", null)
+                        .WithMany("Books")
+                        .HasForeignKey("BookShelfID");
+
+                    b.OwnsMany("BookWorm.DataAccess.Data.Models.Author", "Authors", b1 =>
+                        {
+                            b1.Property<string>("BookId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"), 1L, 1);
+
+                            b1.Property<string>("Name")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("BookId", "Id");
+
+                            b1.ToTable("Author");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookId");
+                        });
+
+                    b.OwnsMany("BookWorm.DataAccess.Data.Models.Subject", "Subjects", b1 =>
+                        {
+                            b1.Property<string>("BookId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"), 1L, 1);
+
+                            b1.Property<string>("Name")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("BookId", "Id");
+
+                            b1.ToTable("Subject");
+
+                            b1.WithOwner()
+                                .HasForeignKey("BookId");
+                        });
+
+                    b.Navigation("Authors");
+
+                    b.Navigation("Subjects");
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.BookShelf", b =>
+                {
+                    b.HasOne("BookWorm.DataAccess.Data.Models.UserAppData", "Owner")
+                        .WithMany("BookShelfs")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.ReadingRecord", b =>
+                {
+                    b.HasOne("BookWorm.DataAccess.Data.Models.Book", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookWorm.DataAccess.Data.Models.UserAppData", "Owner")
+                        .WithMany("ReadingList")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Owner");
+                });
+
             modelBuilder.Entity("BookWorm.DataAccess.Data.Models.RefreshToken", b =>
                 {
                     b.HasOne("BookWorm.DataAccess.Data.Models.ApplicationUser", "User")
@@ -301,13 +538,81 @@ namespace BookWorm.DataAccess.Migrations
 
             modelBuilder.Entity("BookWorm.DataAccess.Data.Models.Review", b =>
                 {
+                    b.HasOne("BookWorm.DataAccess.Data.Models.Book", "Book")
+                        .WithMany("Reviews")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BookWorm.DataAccess.Data.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Book");
+
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.UserAppData", b =>
+                {
+                    b.HasOne("BookWorm.DataAccess.Data.Models.ApplicationUser", "ApplictionUser")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("BookWorm.DataAccess.Data.Models.PreferedType", "PreferedTypes", b1 =>
+                        {
+                            b1.Property<int>("UserAppDataID")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"), 1L, 1);
+
+                            b1.Property<string>("Type")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("UserAppDataID", "Id");
+
+                            b1.ToTable("PreferedType");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserAppDataID");
+                        });
+
+                    b.OwnsMany("BookWorm.DataAccess.Data.Models.ReadingDate", "ReadingDates", b1 =>
+                        {
+                            b1.Property<int>("UserAppDataID")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"), 1L, 1);
+
+                            b1.Property<DateTime>("Date")
+                                .HasColumnType("datetime2");
+
+                            b1.HasKey("UserAppDataID", "Id");
+
+                            b1.ToTable("ReadingDate");
+
+                            b1.WithOwner()
+                                .HasForeignKey("UserAppDataID");
+                        });
+
+                    b.Navigation("ApplictionUser");
+
+                    b.Navigation("PreferedTypes");
+
+                    b.Navigation("ReadingDates");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -359,6 +664,23 @@ namespace BookWorm.DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.Book", b =>
+                {
+                    b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.BookShelf", b =>
+                {
+                    b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("BookWorm.DataAccess.Data.Models.UserAppData", b =>
+                {
+                    b.Navigation("BookShelfs");
+
+                    b.Navigation("ReadingList");
                 });
 #pragma warning restore 612, 618
         }
