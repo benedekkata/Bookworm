@@ -49,6 +49,12 @@ button.buttonBrandPrimary:hover {
   }
 }
 
+@media screen and (max-width: 1125px) {
+  .prevReadingEditButton {
+    width: 95%;
+  }
+}
+
 .lds-ring {
   display: inline-block;
   position: relative;

@@ -21,12 +21,47 @@ namespace BookWorm.BusinessLogic.Services
             _bookRepository = bookRepository;
         }
 
+        public async Task EditBio(string userId, string biotext)
+        {
+            var res = await _userAppDataRepository.EditBio(userId, biotext);
+
+            if (!res) throw new UserNotFoundException("There is not any registered user with id: " + userId);
+        }
+
+        public async Task EditPreferedTypes(string userId, PreferedType[] preferedTypes)
+        {
+            var res = await _userAppDataRepository.EditPreferedTypes(userId, preferedTypes);
+
+            if (!res) throw new UserNotFoundException("There is not any registered user with id: " + userId);
+        }
+
+        public async Task EditReadingRecordAsync(ReadingRecord readingRecord)
+        {
+            var res = await _userAppDataRepository.EditReadingRecord(readingRecord);
+
+            if (res == false) throw new UserNotFoundException("There is not any reading record with the given data");
+        }
+
+        public async Task FinishReadingAsync(ReadingRecord readingRecord)
+        {
+            var res = await _userAppDataRepository.FinishReading(readingRecord.BookId, readingRecord.UserId);
+
+            if (res == false) throw new UserNotFoundException("There is not any reading record with the given data");
+        }
+
         public async Task<UserAppData> GetAppDataByUserIdAsync(string userId)
         {
             var res = await _userAppDataRepository.GetAppDataAsync(userId);
 
             if (res == null) throw new UserNotFoundException("There is not any registered user with id: " + userId);
             return res;
+        }
+
+        public async Task RemoveReadingRecordAsync(ReadingRecord readingRecord)
+        {
+            var res = await _userAppDataRepository.RemoveReadingRecord(readingRecord.BookId, readingRecord.UserId);
+
+            if (res == false) throw new UserNotFoundException("There is not any reading record with the given data");
         }
 
         public async Task<int> SaveBookToReadingListAsync(ReadingRecord readingRecord, string isbn)
@@ -44,6 +79,32 @@ namespace BookWorm.BusinessLogic.Services
                     var res = await _userAppDataRepository.SaveBookToReadingListAsync(readingRecord);
 
                     if (res == -1) throw new UserNotFoundException("There is not any registered user with id: " + readingRecord.UserId);
+                    return res;
+                }
+                else
+                {
+                    throw new BookNotFoundException("Some error occured during the saving!");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                throw new BookNotFoundException($"{e.Message}");
+            }
+        }
+
+        public async Task<int> SaveBookToWishListAsync(string isbn, string uid)
+        {
+            //Save book to db first
+            try
+            {
+                var book = await _bookRepository.GetBookByIsbn(isbn);
+                var bookId = await _bookRepository.SaveBook(book);
+
+                if (bookId != null)
+                {
+                    var res = await _userAppDataRepository.SaveBookToWishListAsync(uid, bookId);
+
+                    if (res == -1) throw new UserNotFoundException("There is not any registered user with id: " + uid);
                     return res;
                 }
                 else

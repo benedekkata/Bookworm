@@ -55,11 +55,15 @@ const PrevReadingItem = (props: {
             <Box display="flex" fontSize="md" textColor="white">
               <Text align="left">
                 {rr.startTime && rr.endTime
-                  ? `Read in ${rr.endTime} took ${rr.endTime} days`
+                  ? `Read in ${new Date(rr.endTime).getFullYear()} took ${
+                      (new Date(rr.endTime).getTime() -
+                        new Date(rr.startTime).getTime()) /
+                      (1000 * 3600 * 24)
+                    } days`
                   : ""}
               </Text>
             </Box>
-            <Flex justifyContent="right">
+            <Flex className="prevReadingEditButton" justifyContent="right">
               <Flex
                 id="detail_btn_margin"
                 borderRadius="full"

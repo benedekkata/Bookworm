@@ -90,8 +90,8 @@ export interface PasswordChange {
 export interface ReadingRecord {
   bookId: string;
   userId: string;
-  startTime?: string;
-  endTime?: string;
+  startTime?: Date;
+  endTime?: Date;
   isMyCopy: boolean;
   isCurrentReading: boolean;
 }
@@ -103,6 +103,17 @@ export interface MyPageData {
   img: string;
   likes: string[];
   readings: ReadingRecord[];
+  bookShelves: BookShelf[];
+}
+
+export interface BookShelf {
+  id?: number;
+  ownerId?: number;
+  name: string;
+  isPrivate: boolean;
+  isWishlist: boolean;
+  iconURL: string;
+  bookIds: string[];
 }
 
 export interface CaruselProps {
@@ -119,4 +130,5 @@ export interface MyPageDataProps {
   currentReadingList: CaruselProps;
   data: MyPageData;
   prevReadingList: PrevReadingListProps;
+  wishlistBooks: BookData[];
 }

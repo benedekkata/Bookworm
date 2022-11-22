@@ -1,4 +1,12 @@
-import { Box, Text, Container, Image, Flex, Icon } from "@chakra-ui/react";
+import {
+  Box,
+  Text,
+  Container,
+  Image,
+  Flex,
+  Icon,
+  useDisclosure,
+} from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { BookData, UnauthorizedError } from "../../helpers/interfaces";
 
@@ -11,22 +19,8 @@ import BookNotFound from "../../components/BookNotFound";
 import bookDefaultImg from "../../assets/images/books.png";
 import Loading from "../../layouts/Loading";
 import { isAuthenticated } from "../../services/AuthenticationService";
-
-const SubjectChip = (props: { subject: string }) => {
-  return (
-    <Text
-      minW="fit-content"
-      borderRadius="3xl"
-      align="left"
-      m="1"
-      px="2"
-      py="0.3"
-      bg="brand.200"
-    >
-      {props.subject}
-    </Text>
-  );
-};
+import SaveBookModal from "./SaveBookModal";
+import SubjectChip from "../../components/SubjectChip";
 
 const BookDetail = () => {
   const [book, setBook] = useState<BookData>();
@@ -45,12 +39,14 @@ const BookDetail = () => {
 
   const authors = book?.authors.join(" «» ");
   const subjects = book?.subjects?.map((book) => (
-    <SubjectChip subject={book} />
+    <SubjectChip key={`key_${book}`} subject={book} />
   ));
   const regex = /<.*?>/gi;
   const navigate = useNavigate();
   const synopsis = book?.synopsis?.replace(regex, "");
   const bookNotFoundView = bookNotFound ? <BookNotFound /> : <Loading />;
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return book === undefined ? (
     <React.Fragment>{bookNotFoundView}</React.Fragment>
@@ -96,7 +92,9 @@ const BookDetail = () => {
               boxSize="70px"
               bg="brand.200"
               boxShadow="md"
+              onClick={onOpen}
               justifyContent="center"
+              sx={{ _hover: { cursor: "pointer" } }}
             >
               <Icon as={MdOutlineSave} w={8} h={8} mt="18px" color="white" />
             </Box>
@@ -150,6 +148,7 @@ const BookDetail = () => {
           </Box>
         </Container>
       </Box>
+      <SaveBookModal isOpen={isOpen} onClose={onClose}></SaveBookModal>
     </React.Fragment>
   );
 };

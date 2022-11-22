@@ -30,5 +30,7 @@ namespace BookWorm.DataAccess.Data.Models
         public List<Subject> Subjects { get; set; }
 
         public List<Review> Reviews { get; set; }
+
+        public List<BookShelf> Shelfs { get; set; }
     }
 }

@@ -19,5 +19,6 @@ namespace BookWorm.BusinessLogic.Data.Models
         public List<string> Likes { get; set; }
         
         public List<ReadingRecord> Readings { get; set; }
+        public List<BookShelf> BookShelves { get; set; }
     }
 }

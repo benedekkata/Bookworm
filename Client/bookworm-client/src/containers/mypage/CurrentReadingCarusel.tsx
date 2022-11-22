@@ -16,12 +16,22 @@ import {
   AiOutlineCloseCircle,
 } from "react-icons/ai";
 import { MdDone } from "react-icons/md";
-import { CaruselProps } from "../helpers/interfaces";
+import { useNavigate } from "react-router-dom";
+import { CaruselProps, UnauthorizedError } from "../../helpers/interfaces";
+import { isAuthenticated } from "../../services/AuthenticationService";
+import {
+  deleteReadingRecord,
+  finishReadingABook,
+} from "../../services/MyPageDataService";
 
-const CurrentReadingCarusel = (props: CaruselProps) => {
+const CurrentReadingCarusel = (props: {
+  data: CaruselProps;
+  refreshState: Function;
+}) => {
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
 
-  const carouselItems = props.currentReadings.map((rr, i) => {
+  const carouselItems = props.data.currentReadings.map((rr, i) => {
     if (i < page * 3 && i >= page * 3 - 3) {
       return (
         <Box
@@ -37,15 +47,30 @@ const CurrentReadingCarusel = (props: CaruselProps) => {
           <Flex justifyContent="space-between">
             <WrapItem>
               <Avatar
+                onClick={() => {
+                  navigate(`/bookdetails/${props.data.currentBooks[i].isbn13}`);
+                }}
                 size="xl"
+                _hover={{ cursor: "pointer" }}
                 boxShadow="xl"
-                name={props.currentBooks[i]?.title}
-                src={props.currentBooks[i]?.image}
+                name={props.data.currentBooks[i]?.title}
+                src={props.data.currentBooks[i]?.image}
               />{" "}
             </WrapItem>
 
             <Icon
               as={AiOutlineCloseCircle}
+              onClick={async () => {
+                const isSuccess = await deleteReadingRecord(rr).catch(
+                  async (error: UnauthorizedError) => {
+                    if (!(await isAuthenticated())) navigate("/login");
+                  }
+                );
+                if (isSuccess) {
+                  props.refreshState();
+                }
+              }}
+              _hover={{ cursor: "pointer" }}
               w={7}
               h={7}
               mt="-0.5rem"
@@ -54,11 +79,11 @@ const CurrentReadingCarusel = (props: CaruselProps) => {
             />
           </Flex>
           <Text mt="5" as="b" fontSize="md" noOfLines={1}>
-            {props.currentBooks[i]?.title}
+            {props.data.currentBooks[i]?.title}
           </Text>
           <Divider></Divider>
           <Text mt="2" as="i" fontSize="md" noOfLines={1}>
-            {props.currentBooks[i]?.authors.join("«»")}
+            {props.data.currentBooks[i]?.authors.join("«»")}
           </Text>
           <Flex
             borderRadius="full"
@@ -70,6 +95,17 @@ const CurrentReadingCarusel = (props: CaruselProps) => {
             marginBottom="-0.5rem"
             marginRight="-0.5rem"
             ml="auto"
+            _hover={{ cursor: "pointer" }}
+            onClick={async () => {
+              const isSuccess = await finishReadingABook(rr).catch(
+                async (error: UnauthorizedError) => {
+                  if (!(await isAuthenticated())) navigate("/login");
+                }
+              );
+              if (isSuccess) {
+                props.refreshState();
+              }
+            }}
           >
             <Icon as={MdDone} w={6} h={6} mt="0.7rem" color="white" />
           </Flex>
@@ -108,7 +144,7 @@ const CurrentReadingCarusel = (props: CaruselProps) => {
     );
 
   const rightButton =
-    page < Math.ceil(props.currentReadings.length / 3) ? (
+    page < Math.ceil(props.data.currentReadings.length / 3) ? (
       <Button
         backgroundColor="brand.200"
         sx={{ _hover: { cursor: "pointer" } }}
