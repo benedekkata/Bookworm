@@ -1,11 +1,14 @@
-import { Box, Flex, Image, Text, Icon } from "@chakra-ui/react";
+import { Box, Flex, Image, Text, Icon, Button } from "@chakra-ui/react";
 
 import React from "react";
 import bookDefaultImg from "../../assets/images/books.png";
 import { FiEdit } from "react-icons/fi";
 import { BookData } from "../../helpers/interfaces";
+import { AiOutlineCloseCircle } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 const WishList = (props: { wishlistItems: BookData[] | undefined }) => {
+  const navigate = useNavigate();
   const items = props.wishlistItems?.map((book, i) => {
     return (
       <Box
@@ -21,6 +24,7 @@ const WishList = (props: { wishlistItems: BookData[] | undefined }) => {
           borderRadius="3xl"
           boxShadow="md"
           minHeight="10rem"
+          justifyContent="space-between"
         >
           <Image
             borderRadius="full"
@@ -32,9 +36,13 @@ const WishList = (props: { wishlistItems: BookData[] | undefined }) => {
               e.target.onError = null;
               e.target.src = bookDefaultImg;
             }}
+            onClick={() => {
+              navigate(`/bookdetails/${book.isbn13}`);
+            }}
+            _hover={{ cursor: "pointer" }}
             alt="Image"
           />
-          <Box w="80%" pl="3rem" mt="1rem">
+          <Box w="75%" pl="3rem" mt="1rem">
             <Box display="flex" fontSize="xl" textColor="white">
               <Text align="left">{book.title}</Text>
             </Box>
@@ -46,6 +54,15 @@ const WishList = (props: { wishlistItems: BookData[] | undefined }) => {
               display="flex"
               sx={{ borderBottom: "0.2rem solid #FF9C27" }}
               w="100%"
+            />
+          </Box>
+          <Box>
+            <Icon
+              as={AiOutlineCloseCircle}
+              _hover={{ cursor: "pointer" }}
+              w={7}
+              h={7}
+              color="white"
             />
           </Box>
         </Flex>

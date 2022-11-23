@@ -2,7 +2,12 @@ import React from "react";
 import { Box, Center, Flex, Icon, Spacer, Square } from "@chakra-ui/react";
 import { Image } from "@chakra-ui/react";
 import { BiExit, BiUser } from "react-icons/bi";
-import { Link as RouterLink, Navigate, useNavigate } from "react-router-dom";
+import {
+  Link as RouterLink,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import logo from "../assets/images/books.png";
 import { signOut } from "../services/AuthenticationService";
 
@@ -11,16 +16,29 @@ const Navbar = (props: {
   setAuthenticated: Function;
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const menu = props.isAuthenticated ? (
     <React.Fragment>
       <Center ml="3" mr="3">
-        <Box ml="3" mr="3" textColor="white">
+        <Box
+          ml="3"
+          mr="3"
+          textColor={location.pathname === "/" ? "brand.300" : "white"}
+        >
           <RouterLink to="/">HOME</RouterLink>
         </Box>
-        <Box ml="3" mr="3" textColor="white">
+        <Box
+          ml="3"
+          mr="3"
+          textColor={location.pathname === "/users" ? "brand.300" : "white"}
+        >
           <RouterLink to="/users">USERS</RouterLink>
         </Box>
-        <Box ml="3" mr="3" textColor="white">
+        <Box
+          ml="3"
+          mr="3"
+          textColor={location.pathname === "/mypage" ? "brand.300" : "white"}
+        >
           <RouterLink to="/mypage">MY PAGE</RouterLink>
         </Box>
       </Center>

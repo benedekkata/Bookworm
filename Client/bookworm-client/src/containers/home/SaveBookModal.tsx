@@ -51,7 +51,7 @@ const SaveBookModal = (props: { isOpen: boolean; onClose: any }) => {
         <ModalHeader>Save the book</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <FormControl>
+          <FormControl mb="2rem">
             <FormLabel>Save book to...</FormLabel>
             <Select
               value={saveType}
@@ -64,7 +64,7 @@ const SaveBookModal = (props: { isOpen: boolean; onClose: any }) => {
           </FormControl>
           {saveForm()}
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter mt="2rem">
           <Button
             color="white"
             onClick={onClick}

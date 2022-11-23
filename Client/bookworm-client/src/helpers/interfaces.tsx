@@ -88,12 +88,12 @@ export interface PasswordChange {
 }
 
 export interface ReadingRecord {
-  bookId: string;
-  userId: string;
+  bookId?: string;
+  userId?: string;
   startTime?: Date;
   endTime?: Date;
-  isMyCopy: boolean;
-  isCurrentReading: boolean;
+  isMyCopy?: boolean;
+  isCurrentReading?: boolean;
 }
 
 export interface MyPageData {

@@ -17,7 +17,9 @@ import {
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import React, {
   ForwardRefRenderFunction,
+  useEffect,
   useImperativeHandle,
+  useMemo,
   useState,
 } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -36,16 +38,10 @@ import {
 } from "../../services/MyPageDataService";
 
 export const SaveFormReading = React.forwardRef<any, any>(
-  (
-    props: { closeModal: any; isEditMode: boolean; bookIdForEdit: string },
-    ref
-  ) => {
+  (props: { closeModal: any }, ref) => {
     const [failedSettingsChange, setFailedSettingsChange] = useState(false);
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [reason, setReason] = useState("");
-
-    const {
+    let {
       register,
       handleSubmit,
       reset,
@@ -55,6 +51,10 @@ export const SaveFormReading = React.forwardRef<any, any>(
     });
 
     const navigate = useNavigate();
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [reason, setReason] = useState("");
+
     const { isbn } = useParams();
     const [pdStart, setPdStart] = useState<Date | undefined>();
     const [pdEnd, setPdEnd] = useState<Date | undefined>();
@@ -71,27 +71,14 @@ export const SaveFormReading = React.forwardRef<any, any>(
       data.startTime = pdStart;
       data.endTime = pdEnd;
       if (data) {
-        let isSuccess: boolean | any = false;
-        if (!props.isEditMode) {
-          isSuccess = await saveBook(data, isbn)
-            .catch(async (error: UnauthorizedError) => {
-              if (!(await isAuthenticated())) navigate("/login");
-            })
-            .catch((e: BadRequestError) => {
-              setReason(e.message);
-              setFailedSettingsChange(true);
-            });
-        } else {
-          data.bookId = props.bookIdForEdit;
-          isSuccess = await editReadingRecord(data)
-            .catch(async (error: UnauthorizedError) => {
-              if (!(await isAuthenticated())) navigate("/login");
-            })
-            .catch((e: BadRequestError) => {
-              setReason(e.message);
-              setFailedSettingsChange(true);
-            });
-        }
+        const isSuccess = await saveBook(data, isbn)
+          .catch(async (error: UnauthorizedError) => {
+            if (!(await isAuthenticated())) navigate("/login");
+          })
+          .catch((e: BadRequestError) => {
+            setReason(e.message);
+            setFailedSettingsChange(true);
+          });
 
         if (isSuccess) {
           reset();
@@ -124,8 +111,8 @@ export const SaveFormReading = React.forwardRef<any, any>(
       <Loading></Loading>
     ) : (
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={3} my="2rem">
-          <FormControl isInvalid={errors.startTime !== undefined}>
+        <Stack spacing={3}>
+          <FormControl>
             <FormLabel>Start Time (otional)</FormLabel>
             <InputGroup display="flex" justifyContent="space-between">
               <SingleDatepicker
@@ -145,11 +132,8 @@ export const SaveFormReading = React.forwardRef<any, any>(
                 onClick={clearStartTime}
               ></Icon>
             </InputGroup>
-            <FormErrorMessage>
-              {errors.startTime && errors.startTime.message}
-            </FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={errors.endTime !== undefined}>
+          <FormControl>
             <FormLabel>End Time (otional)</FormLabel>
             <InputGroup display="flex" justifyContent="space-between">
               <SingleDatepicker
@@ -169,11 +153,8 @@ export const SaveFormReading = React.forwardRef<any, any>(
                 onClick={clearEndTime}
               ></Icon>
             </InputGroup>
-            <FormErrorMessage>
-              {errors.endTime && errors.endTime.message}
-            </FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={errors.isCurrentReading !== undefined}>
+          <FormControl>
             <FormLabel>Is current reading?</FormLabel>
             <InputGroup>
               <Switch
@@ -181,18 +162,12 @@ export const SaveFormReading = React.forwardRef<any, any>(
                 borderColor="brand.100"
               />
             </InputGroup>
-            <FormErrorMessage>
-              {errors.isCurrentReading && errors.isCurrentReading.message}
-            </FormErrorMessage>
           </FormControl>
-          <FormControl isInvalid={errors.isMyCopy !== undefined}>
+          <FormControl>
             <FormLabel>Is my copy?</FormLabel>
             <InputGroup>
               <Switch {...register("isMyCopy")} borderColor="brand.100" />
             </InputGroup>
-            <FormErrorMessage>
-              {errors.isMyCopy && errors.isMyCopy.message}
-            </FormErrorMessage>
           </FormControl>
         </Stack>
       </form>

@@ -63,7 +63,7 @@ const getBookDataFromReadingRecord = async (
 ) => {
   let books: BookData[] = [];
   for (const rr of currentReadings) {
-    const book = await getBookById(rr.bookId);
+    const book = await getBookById(rr.bookId ? rr.bookId : "");
     if (book) {
       books.push(book);
     }
@@ -224,6 +224,43 @@ export const deleteReadingRecord = async (
 
   return false;
 };
+export const deleteReadingRecordByBookId = async (
+  bookId: string
+): Promise<boolean> => {
+  const token: string | null = localStorage.getItem("token");
+  const uid: string | null = localStorage.getItem("userId");
+
+  const requestOptions = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      userId: uid,
+      bookId: bookId,
+      isCurrentReading: false,
+      isMyCopy: false,
+    } as ReadingRecord),
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/readingrecord`,
+    requestOptions
+  );
+  if (response.status === 204) {
+    return true;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+  if (response.status === 400) {
+    const msg = await response.text();
+    throw new BadRequestError(msg);
+  }
+
+  return false;
+};
 
 export const finishReadingABook = async (
   readingRecord: ReadingRecord | undefined
@@ -243,7 +280,7 @@ export const finishReadingABook = async (
     `${API_USERAPPDATA}/readingrecord/finishbook`,
     requestOptions
   );
-  if (response.status === 204) {
+  if (response.status === 200) {
     return true;
   }
   if (response.status === 401) {
@@ -272,10 +309,10 @@ export const editReadingRecord = async (
   };
 
   const response: Response = await fetch(
-    `${API_USERAPPDATA}/readingrecord/finishbook`,
+    `${API_USERAPPDATA}/readingrecord/`,
     requestOptions
   );
-  if (response.status === 204) {
+  if (response.status === 200) {
     return true;
   }
   if (response.status === 401) {
@@ -287,4 +324,34 @@ export const editReadingRecord = async (
   }
 
   return false;
+};
+
+export const getReadingRecord = async (
+  bookId: string
+): Promise<ReadingRecord | undefined> => {
+  const token: string | null = localStorage.getItem("token");
+  const uid: string | null = localStorage.getItem("userId");
+
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/readingrecord?bookId=${bookId}&userId=${uid}`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    const res: ReadingRecord = await response.json();
+
+    return res;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+
+  return undefined;
 };

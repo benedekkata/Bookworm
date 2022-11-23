@@ -206,5 +206,16 @@ namespace BookWorm.DataAccess.Repositories
 
             return true;
         }
+
+        public async Task<BusinessLogic.Data.Models.ReadingRecord> GetReadingRecord(string? bookId, string userId)
+        {
+            var userAppData = _context.UserAppData.Include(ud => ud.ReadingList).Where(u => u.UserId == userId).FirstOrDefault();
+            if (userAppData == null) return null;
+
+            var reading = userAppData.ReadingList.Find(rr => rr.OwnerId == userAppData.ID && rr.BookId == bookId);
+            if (reading == null) return null;
+
+            return new BusinessLogic.Data.Models.ReadingRecord(userId, reading.IsMyCopy, reading.IsCurrentReading, reading.BookId, reading.StartTime, reading.EndTime);
+        }
     }
 }

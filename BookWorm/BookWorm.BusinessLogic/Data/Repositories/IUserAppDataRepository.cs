@@ -14,6 +14,7 @@ namespace BookWorm.BusinessLogic.Data.Repositories
         Task<bool> EditReadingRecord(ReadingRecord readingRecord);
         Task<bool> FinishReading(string? bookId, string userId);
         Task<UserAppData> GetAppDataAsync(string userId);
+        Task<ReadingRecord> GetReadingRecord(string? bookId, string userId);
         Task<bool> RemoveReadingRecord(string? bookId, string userId);
         Task<int> SaveBookToReadingListAsync(ReadingRecord readingRecord);
         Task<int> SaveBookToWishListAsync(string uid, string bookId);

@@ -1,6 +1,7 @@
 ﻿using BookWorm.BusinessLogic.Data.Models;
 using BookWorm.BusinessLogic.Data.Repositories;
 using BookWorm.BusinessLogic.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -54,6 +55,15 @@ namespace BookWorm.BusinessLogic.Services
             var res = await _userAppDataRepository.GetAppDataAsync(userId);
 
             if (res == null) throw new UserNotFoundException("There is not any registered user with id: " + userId);
+            return res;
+        }
+
+        public async Task<ReadingRecord> GetReadingRecordAsync(string bookId, string userId)
+        {
+            var res = await _userAppDataRepository.GetReadingRecord(bookId, userId);
+
+            if (res == null) throw new UserNotFoundException("There is not any reading record with the given data");
+
             return res;
         }
 

@@ -1,13 +1,16 @@
 import { Box, Flex, Image, Text, Icon } from "@chakra-ui/react";
 
-import React from "react";
+import React, { useRef } from "react";
 import { PrevReadingListProps } from "../helpers/interfaces";
 import bookDefaultImg from "../assets/images/books.png";
 import { FiEdit } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 
 const PrevReadingItem = (props: {
   readingData: PrevReadingListProps | undefined;
 }) => {
+  const navigate = useNavigate();
+
   const items = props.readingData?.prevReadings.map((rr, i) => {
     return (
       <Box
@@ -29,6 +32,12 @@ const PrevReadingItem = (props: {
             boxSize="100px"
             boxShadow="md"
             mt="1rem"
+            _hover={{ cursor: "pointer" }}
+            onClick={() => {
+              navigate(
+                `/bookdetails/${props.readingData?.prevBooks[i].isbn13}`
+              );
+            }}
             src={props.readingData?.prevBooks[i].image}
             onError={(e: any) => {
               e.target.onError = null;
@@ -56,16 +65,23 @@ const PrevReadingItem = (props: {
               <Text align="left">
                 {rr.startTime && rr.endTime
                   ? `Read in ${new Date(rr.endTime).getFullYear()} took ${
-                      (new Date(rr.endTime).getTime() -
-                        new Date(rr.startTime).getTime()) /
-                      (1000 * 3600 * 24)
+                      Math.round(
+                        ((new Date(rr.endTime).getTime() -
+                          new Date(rr.startTime).getTime()) /
+                          (1000 * 3600 * 24)) *
+                          100
+                      ) / 100
                     } days`
                   : ""}
               </Text>
             </Box>
             <Flex className="prevReadingEditButton" justifyContent="right">
               <Flex
+                _hover={{ cursor: "pointer" }}
                 id="detail_btn_margin"
+                onClick={() => {
+                  navigate(`/readingrecord/${rr.bookId}`);
+                }}
                 borderRadius="full"
                 boxSize="70px"
                 bg="brand.200"

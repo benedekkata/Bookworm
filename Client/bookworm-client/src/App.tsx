@@ -14,6 +14,7 @@ import {
   RequireAuth,
   PageNotFoundPage,
   UserSettingsPage,
+  ReadingRecordEditPage,
 } from "./pages/pages";
 import { AppTheme } from "./config/Theme";
 import { PrivateRoute } from "./helpers/utils";
@@ -53,8 +54,15 @@ const App = () => {
             <Route path="/bookdetails/:isbn" element={<BookDetailPage />} />
           </Route>
           <Route path="/" element={<PrivateRoute />}>
+            <Route
+              path="/readingrecord/:bookId"
+              element={<ReadingRecordEditPage />}
+            />
+          </Route>
+          <Route path="/" element={<PrivateRoute />}>
             <Route path="/settings" element={<UserSettingsPage />} />
           </Route>
+
           <Route path="*" element={<PageNotFoundPage />}></Route>
         </Routes>
       </ChakraProvider>

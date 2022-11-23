@@ -152,5 +152,21 @@ namespace BookWorm.WebAPI.Controllers
                 return NotFound(e.Message);
             }
         }
+
+        [HttpGet("readingrecord")]
+        public async Task<IActionResult> GetReadingRecordAsync([FromQuery] string bookId, [FromQuery] string userId)
+        {
+            if (bookId == null || userId == null) return BadRequest("You need to specify at least the bookId and the userId for this!");
+
+            try
+            {
+                var res = await _userAppDataService.GetReadingRecordAsync(bookId, userId);
+                return Ok(res);
+            }
+            catch (UserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
     }
 }

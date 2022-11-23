@@ -7,6 +7,7 @@ import Register from "../containers/authentication/Register";
 import PageNotFound from "../components/PageNotFound";
 import UserSettings from "../containers/userdata/UserSettings";
 import MyPageComponent from "../containers/mypage/MyPageComponent";
+import EditreadingRecord from "../containers/mypage/EditreadingRecord";
 
 export const HomePage = () => {
   return <Home></Home>;
@@ -30,6 +31,10 @@ export const LoginPage = (props: { setAuthenticated: Function }) => {
 
 export const ResisterPage = (props: { setAuthenticated: Function }) => {
   return <Register setAuthenticated={props.setAuthenticated} />;
+};
+
+export const ReadingRecordEditPage = () => {
+  return <EditreadingRecord />;
 };
 
 export const RequireAuth = (props: { isAuthenticated: Boolean }) => {
