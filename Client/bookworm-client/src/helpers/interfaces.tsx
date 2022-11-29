@@ -132,3 +132,17 @@ export interface MyPageDataProps {
   prevReadingList: PrevReadingListProps;
   wishlistBooks: BookData[];
 }
+
+export interface UserDetailPublic {
+  bookShelves: BookShelf[];
+  data: UserResultData;
+}
+
+export interface UserResultData {
+  userId: string;
+  displayName: string;
+  email: string;
+  profileImgUrl?: string;
+  description?: string;
+  likes?: string[];
+}

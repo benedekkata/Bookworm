@@ -11,10 +11,11 @@ import {
   UsersPage,
   ResisterPage,
   LoginPage,
-  RequireAuth,
   PageNotFoundPage,
   UserSettingsPage,
   ReadingRecordEditPage,
+  BookShelfEditPage,
+  UserDetailPage,
 } from "./pages/pages";
 import { AppTheme } from "./config/Theme";
 import { PrivateRoute } from "./helpers/utils";
@@ -48,6 +49,9 @@ const App = () => {
             <Route path="/users" element={<UsersPage />} />
           </Route>
           <Route path="/" element={<PrivateRoute />}>
+            <Route path="/users/:userId" element={<UserDetailPage />} />
+          </Route>
+          <Route path="/" element={<PrivateRoute />}>
             <Route path="/mypage" element={<MyPagePage />} />
           </Route>
           <Route path="/" element={<PrivateRoute />}>
@@ -58,6 +62,9 @@ const App = () => {
               path="/readingrecord/:bookId"
               element={<ReadingRecordEditPage />}
             />
+          </Route>
+          <Route path="/" element={<PrivateRoute />}>
+            <Route path="/shelf/:shelfId" element={<BookShelfEditPage />} />
           </Route>
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/settings" element={<UserSettingsPage />} />

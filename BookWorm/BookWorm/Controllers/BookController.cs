@@ -48,6 +48,38 @@ namespace BookWorm.WebAPI.Controllers
             }
         }
 
+        [HttpGet("shelf/{shelfId}")]
+        public async Task<IActionResult> GetBooksByShelfId([FromRoute] int shelfId)
+        {
+            if (shelfId == null) return BadRequest("Please, provide all the required fields!");
+
+            try
+            {
+                var result = await _bookService.GetBooksByShelfId(shelfId);
+                return Ok(result);
+            }
+            catch (BookNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpDelete("shelf/{shelfId}")]
+        public async Task<IActionResult> DeleteBookByIsbnFromShelf([FromRoute] int shelfId, [FromQuery] string isbn)
+        {
+            if (shelfId == null || isbn == null) return BadRequest("Please, provide all the required fields!");
+
+            try
+            {
+                await _bookService.DeleteBookByIsbnFromShelf(shelfId, isbn);
+                return NoContent();
+            }
+            catch (BookNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
         [HttpGet("{bookId}")]
         public async Task<IActionResult> GetBookById(string bookId)
         {

@@ -51,7 +51,9 @@ const Home = () => {
   const [pdEnd, setPdEnd] = useState<Date | undefined>(startData.maxYear);
   const [order, setOrder] = useState(startData.order);
   const [onlyReview, setOnlyReview] = React.useState(startData.onlyReview);
-  const [isFilterApplied, setIsFilterApplied] = useState<boolean>(false);
+  const [isFilterApplied, setIsFilterApplied] = useState<boolean>(
+    startData.maxYear || startData.minYear ? true : false
+  );
   const [page, setPage] = useState<number>(startData.page);
   const [maxPage, setMaxPage] = useState<number>(0);
 
@@ -75,6 +77,7 @@ const Home = () => {
   };
 
   useEffect(() => {
+    console.log("called");
     onClickSearch();
   }, [isFilterApplied, onlyReview, order, page]);
 
@@ -246,9 +249,8 @@ const Home = () => {
                       variant="solid"
                       mt="1rem"
                       onClick={() => {
-                        if (pdStart || pdEnd) {
-                          setIsFilterApplied(true);
-                        }
+                        setIsFilterApplied(true);
+                        onClickSearch();
                       }}
                       mr={1}
                     >

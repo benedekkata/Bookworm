@@ -40,6 +40,7 @@ import {
   saveBioAndPreferedTypes,
 } from "../../services/MyPageDataService";
 import WishList from "./WishList";
+import ShelvesList from "./ShelvesList";
 
 const MyPageComponent = () => {
   const [myPageData, setMyPageData] = useState<MyPageDataProps | undefined>();
@@ -224,7 +225,7 @@ const MyPageComponent = () => {
                 >
                   Previous Readings
                 </Box>
-                <AccordionIcon />
+                <AccordionIcon color="white" />
               </AccordionButton>
             </h2>
             <AccordionPanel
@@ -259,7 +260,7 @@ const MyPageComponent = () => {
                 >
                   Wishlist
                 </Box>
-                <AccordionIcon />
+                <AccordionIcon color="white" />
               </AccordionButton>
             </h2>
             <AccordionPanel
@@ -269,7 +270,42 @@ const MyPageComponent = () => {
               border="2px solid"
               borderColor="brand.100"
             >
-              <WishList wishlistItems={myPageData?.wishlistBooks}></WishList>
+              <WishList
+                wishlistItems={myPageData?.wishlistBooks}
+                refreshState={refreshState}
+                readOnly={false}
+              ></WishList>
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
+      </Container>
+      <Container my="3rem" minW="75%">
+        <Accordion allowToggle>
+          <AccordionItem>
+            <AccordionButton
+              backgroundColor="brand.100"
+              borderRadius="xl"
+              sx={{ _hover: { cursor: "pointer" } }}
+            >
+              <Box
+                flex="1"
+                textAlign="center"
+                textColor="white"
+                fontSize="3xl"
+                backgroundColor="brand.100"
+              >
+                Shelves
+              </Box>
+              <AccordionIcon color="white" />
+            </AccordionButton>
+            <AccordionPanel
+              mt="1rem"
+              py={3}
+              borderRadius="xl"
+              border="2px solid"
+              borderColor="brand.100"
+            >
+              <ShelvesList onlyPublic={false}></ShelvesList>
             </AccordionPanel>
           </AccordionItem>
         </Accordion>

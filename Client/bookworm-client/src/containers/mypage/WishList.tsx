@@ -2,14 +2,43 @@ import { Box, Flex, Image, Text, Icon, Button } from "@chakra-ui/react";
 
 import React from "react";
 import bookDefaultImg from "../../assets/images/books.png";
-import { FiEdit } from "react-icons/fi";
-import { BookData } from "../../helpers/interfaces";
+import { BookData, UnauthorizedError } from "../../helpers/interfaces";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { deleteBookWishList } from "../../services/MyPageDataService";
+import { isAuthenticated } from "../../services/AuthenticationService";
 
-const WishList = (props: { wishlistItems: BookData[] | undefined }) => {
+const WishList = (props: {
+  wishlistItems: BookData[] | undefined;
+  refreshState: Function;
+  readOnly: boolean;
+}) => {
   const navigate = useNavigate();
+
   const items = props.wishlistItems?.map((book, i) => {
+    const deleteButton = props.readOnly ? (
+      ""
+    ) : (
+      <Box>
+        <Icon
+          as={AiOutlineCloseCircle}
+          _hover={{ cursor: "pointer" }}
+          onClick={async () => {
+            const isSuccess = await deleteBookWishList(book.isbn13).catch(
+              async (error: UnauthorizedError) => {
+                if (!(await isAuthenticated())) navigate("/login");
+              }
+            );
+            if (isSuccess) {
+              props.refreshState();
+            }
+          }}
+          w={7}
+          h={7}
+          color="white"
+        />
+      </Box>
+    );
     return (
       <Box
         key={`${i}_prevreading_elem`}
@@ -56,15 +85,7 @@ const WishList = (props: { wishlistItems: BookData[] | undefined }) => {
               w="100%"
             />
           </Box>
-          <Box>
-            <Icon
-              as={AiOutlineCloseCircle}
-              _hover={{ cursor: "pointer" }}
-              w={7}
-              h={7}
-              color="white"
-            />
-          </Box>
+          {deleteButton}
         </Flex>
       </Box>
     );

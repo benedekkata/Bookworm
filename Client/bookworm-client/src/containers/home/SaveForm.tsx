@@ -13,6 +13,7 @@ import {
   Stack,
   Switch,
   Icon,
+  FormHelperText,
 } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
 import React, {
@@ -27,13 +28,19 @@ import { FiUser } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { datePcikerConfig } from "../../config/GeneralConfig";
-import { ReadingRecord, UnauthorizedError } from "../../helpers/interfaces";
+import {
+  BookShelf,
+  ReadingRecord,
+  UnauthorizedError,
+} from "../../helpers/interfaces";
 import { BadRequestError } from "../../helpers/utils";
 import Loading from "../../layouts/Loading";
 import { isAuthenticated } from "../../services/AuthenticationService";
 import {
   editReadingRecord,
+  getShelves,
   saveBook,
+  saveBookToShelf,
   saveBookWishList,
 } from "../../services/MyPageDataService";
 
@@ -244,6 +251,98 @@ export const SaveFormWishlist = React.forwardRef<any, any>(
   }
 );
 
-export const SaveFormShelf = (props: { submitRef: any }) => {
-  return <div>SaveFormShelf</div>;
-};
+export const SaveFormShelf = React.forwardRef<any, any>(
+  (props: { closeModal: any }, ref) => {
+    const [shelves, setShelves] = useState<BookShelf[] | undefined>();
+    const [options, setOptions] = useState<JSX.Element[]>();
+    const [selectedShelfId, setSelectedShelfId] = useState<
+      number | undefined
+    >();
+
+    const [failedSettingsChange, setFailedSettingsChange] = useState(false);
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [reason, setReason] = useState("");
+
+    const navigate = useNavigate();
+    const { isbn } = useParams();
+
+    useEffect(() => {
+      getShelves().then(setShelves);
+    }, []);
+
+    useEffect(() => {
+      setOptions(
+        shelves?.map((v) => {
+          return (
+            <option key={`${v.id}option`} value={v.id}>
+              {v.name}
+            </option>
+          );
+        })
+      );
+    }, [shelves]);
+
+    const onSubmit = async () => {
+      setIsLoading(true);
+      const isSuccess = await saveBookToShelf(
+        isbn ? isbn : "",
+        selectedShelfId ? selectedShelfId : -1
+      )
+        .catch(async (error: UnauthorizedError) => {
+          if (!(await isAuthenticated())) navigate("/login");
+        })
+        .catch((e: BadRequestError) => {
+          setReason(e.message);
+          setFailedSettingsChange(true);
+        });
+      if (isSuccess) {
+        setFailedSettingsChange(false);
+        props.closeModal();
+      } else {
+        setFailedSettingsChange(true);
+        if (!reason) setReason("Some error occured!");
+      }
+
+      setIsLoading(false);
+    };
+    useImperativeHandle(ref, () => ({
+      submitForm() {
+        onSubmit();
+      },
+    }));
+
+    const settingsChangeError = failedSettingsChange ? (
+      <Container mt="2rem">
+        <Alert status="error" my="0.5rem" borderRadius="2xl" textAlign="center">
+          <AlertIcon />
+          {reason}
+        </Alert>
+      </Container>
+    ) : null;
+
+    const content = isLoading ? (
+      <Loading></Loading>
+    ) : (
+      <FormControl>
+        <FormLabel>Select a shelf...</FormLabel>
+        <Select
+          value={selectedShelfId}
+          onChange={(e) => setSelectedShelfId(parseInt(e.target.value))}
+        >
+          {options}
+        </Select>
+        <FormHelperText fontSize="sm">
+          If you see an empty dropdown you don't have any shelf yet.
+        </FormHelperText>
+      </FormControl>
+    );
+
+    return (
+      <div>
+        {settingsChangeError}
+        {content}
+      </div>
+    );
+  }
+);

@@ -4,6 +4,7 @@ using BookWorm.BusinessLogic.Exceptions;
 using BookWorm.DataAccess.Data;
 using BookWorm.DataAccess.Data.JSONConverters;
 using BookWorm.DataAccess.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
@@ -131,6 +132,97 @@ namespace BookWorm.DataAccess.Repositories
             };
 
             return result;
+        }
+
+        public async Task<BusinessLogic.Data.Models.Book> GetBookFormDbByIsbn(string isbn)
+        {
+            var book = _context.Book.Where(b => b.ISBN13 == isbn || b.ISBN == isbn).FirstOrDefault();
+
+            if (book == null) return null;
+
+            var result = new BusinessLogic.Data.Models.Book()
+            {
+                Title = book.Title,
+                Authors = book.Authors.Select(a => a.Name).ToArray(),
+                Image = book.ImageURL,
+                Isbn = book.ISBN,
+                Isbn13 = book.ISBN13,
+                Pages = book.Pages,
+                DatePublished = book.DatePublished,
+                Publisher = book.Publisher,
+                Synopsis = book.Synopsis,
+                Overview = book.Overview,
+                Subjects = book.Subjects.Select(s => s.Name).ToArray(),
+                Language = book.Language,
+                Id = book.Id,
+            };
+
+            return result;
+        }
+
+        public async Task<IEnumerable<BusinessLogic.Data.Models.Book>> GetBooksByShelfId(int shelfId)
+        {
+
+            var shelf = _context.BookShelf.Include(bs => bs.Books).Where(bs => bs.ID == shelfId).FirstOrDefault();
+
+            if (shelf == null) return null;
+
+            var books = ConvertBooks(shelf.Books);
+
+            return books;
+        }
+
+        private IEnumerable<BusinessLogic.Data.Models.Book> ConvertBooks(List<Data.Models.Book> books)
+        {
+
+            return books.Select(book => new BusinessLogic.Data.Models.Book()
+            {
+                Title = book.Title,
+                Authors = book.Authors.Select(a => a.Name).ToArray(),
+                Image = book.ImageURL,
+                Isbn = book.ISBN,
+                Isbn13 = book.ISBN13,
+                Pages = book.Pages,
+                DatePublished = book.DatePublished,
+                Publisher = book.Publisher,
+                Synopsis = book.Synopsis,
+                Overview = book.Overview,
+                Subjects = book.Subjects.Select(s => s.Name).ToArray(),
+                Language = book.Language,
+                Id = book.Id,
+            });
+            
+        }
+
+        public async Task<BusinessLogic.Data.Models.Book> DeleteBookByIsbnFromShelf(int shelfId, string isbn)
+        {
+            var shelf = _context.BookShelf.Include(bs => bs.Books).Where(bs => bs.ID == shelfId).FirstOrDefault();
+
+            if (shelf == null) return null;
+
+            var bookToDelete = shelf.Books.Where(b => b.ISBN13 == isbn || b.ISBN == isbn).FirstOrDefault();
+
+            if (bookToDelete == null) return null;
+
+            shelf.Books.Remove(bookToDelete);
+            _context.SaveChanges();
+
+            return new BusinessLogic.Data.Models.Book()
+            {
+                Title = bookToDelete.Title,
+                Authors = bookToDelete.Authors.Select(a => a.Name).ToArray(),
+                Image = bookToDelete.ImageURL,
+                Isbn = bookToDelete.ISBN,
+                Isbn13 = bookToDelete.ISBN13,
+                Pages = bookToDelete.Pages,
+                DatePublished = bookToDelete.DatePublished,
+                Publisher = bookToDelete.Publisher,
+                Synopsis = bookToDelete.Synopsis,
+                Overview = bookToDelete.Overview,
+                Subjects = bookToDelete.Subjects.Select(s => s.Name).ToArray(),
+                Language = bookToDelete.Language,
+                Id = bookToDelete.Id,
+            };
         }
     }
 }

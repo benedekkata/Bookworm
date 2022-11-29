@@ -3,6 +3,7 @@ using BookWorm.BusinessLogic.Exceptions;
 using BookWorm.BusinessLogic.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.Data.Common;
 
 namespace BookWorm.WebAPI.Controllers
@@ -53,7 +54,7 @@ namespace BookWorm.WebAPI.Controllers
         }
 
 
-        [HttpPost("savewishlist/{isbn}")]
+        [HttpPost("wishlist/{isbn}")]
         public async Task<IActionResult> SaveBookToWishListAsync(string isbn, [FromQuery] string uid )
         {
             if (isbn==null || uid==null) return BadRequest("Please, provide all the required fields!");
@@ -73,6 +74,25 @@ namespace BookWorm.WebAPI.Controllers
             }
         }
 
+        [HttpDelete("wishlist/{isbn}")]
+        public async Task<IActionResult> RemoveBookFromWishListAsync(string isbn, [FromQuery] string uid)
+        {
+            if (isbn == null || uid == null) return BadRequest("Please, provide all the required fields!");
+
+            try
+            {
+                await _userAppDataService.RemoveBookFromWishListAsync(isbn, uid);
+                return Ok();
+            }
+            catch (UserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (BookNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
         [HttpPost("editbio/{userId}")]
         public async Task<IActionResult> EditBioAsync([FromRoute] string userId, [FromBody] BioText bioText)
         {
@@ -164,6 +184,107 @@ namespace BookWorm.WebAPI.Controllers
                 return Ok(res);
             }
             catch (UserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpGet("shelves")]
+        public async Task<IActionResult> GetShelvesAsync([FromQuery] string userId)
+        {
+            if (userId == null) return BadRequest("You need to provide a userId for this!");
+
+            try
+            {
+                var res = await _userAppDataService.GetShelvesAsync(userId);
+                return Ok(res);
+            }
+            catch (UserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+        [HttpGet("shelves/{shelfId}")]
+        public async Task<IActionResult> GetShelfByIdAsync([FromRoute] int shelfId)
+        {
+            if (shelfId == null) return BadRequest("You need to provide a shelfId  and userId for this!");
+
+            var res = await _userAppDataService.GetShelfByIdAsync(shelfId);
+            return Ok(res);
+        }
+
+        [HttpGet("shelves/{shelfId}/isowned")]
+        public async Task<IActionResult> CheckIfOwnShelfAsync([FromRoute] int shelfId)
+        {
+            if (shelfId == null) return BadRequest("You need to provide a shelfId  and userId for this!");
+                        
+            var res = await _userAppDataService.CheckIfOwnShelfAsync(shelfId);
+            return Ok(res);
+        }
+
+        [HttpDelete("shelves/{shelfId}")]
+        public async Task<IActionResult> DeleteShelfByIdAsync([FromRoute] int shelfId, [FromQuery] string userId)
+        {
+            if (shelfId == null || userId == null) return BadRequest("You need to provide a shelfId and userId for this!");
+
+            try
+            {
+                await _userAppDataService.DeleteShelfByIdAsync(shelfId, userId);
+                return NoContent();
+            }
+            catch (UserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("shelves")]
+        public async Task<IActionResult> EditShelfByIdAsync([FromBody] BookShelf shelf)
+        {
+            if (!ModelState.IsValid) return BadRequest("You need to provide the right fileds for this!");
+
+            try
+            {
+                await _userAppDataService.EditShelfByIdAsync(shelf);
+                return Ok();
+            }
+            catch (UserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPost("shelves")]
+        public async Task<IActionResult> CreateShelfAsync([FromBody] BookShelf shelf)
+        {
+            if (!ModelState.IsValid) return BadRequest("You need to provide the right fileds for this!");
+
+            try
+            {
+                var res = await _userAppDataService.CreateShelfAsync(shelf);
+                return Ok(res);
+            }
+            catch (UserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPost("shelves/save")]
+        public async Task<IActionResult> SaveBookToShelf([FromBody] SaveToShelfRequest request)
+        {
+            if (!ModelState.IsValid) return BadRequest("You need to provide a userId for this!");
+
+            try
+            {
+                await _userAppDataService.SaveBookToShelf(request);
+                return Ok();
+            }
+            catch (UserNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+            catch (BookNotFoundException e)
             {
                 return NotFound(e.Message);
             }

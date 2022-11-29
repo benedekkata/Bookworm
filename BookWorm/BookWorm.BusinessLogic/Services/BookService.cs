@@ -2,6 +2,7 @@
 using BookWorm.BusinessLogic.Data.Models;
 using BookWorm.BusinessLogic.Data.Repositories;
 using BookWorm.BusinessLogic.Exceptions;
+using System.Net;
 
 namespace BookWorm.BusinessLogic.Services
 {
@@ -74,6 +75,19 @@ namespace BookWorm.BusinessLogic.Services
             var book =  await _bookRepository.GetBookById(bookId);
             if (book == null) throw new BookNotFoundException($"Book with id: {bookId} is not found");
             else return book;
+        }
+
+        public async Task<IEnumerable<Book>> GetBooksByShelfId(int shelfId)
+        {
+            var books = await _bookRepository.GetBooksByShelfId(shelfId);
+            if (books == null) throw new BookNotFoundException($"Book with shelfId: {shelfId} is not found");
+            else return books;
+        }
+
+        public async Task DeleteBookByIsbnFromShelf(int shelfId, string isbn)
+        {
+            var books = await _bookRepository.DeleteBookByIsbnFromShelf(shelfId, isbn);
+            if (books == null) throw new BookNotFoundException($"Book with shelfId: {shelfId} is not found");
         }
     }
 }

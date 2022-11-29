@@ -1,10 +1,11 @@
+import { maxTime, minTime } from "date-fns";
 import { API_BOOK } from "../helpers/constants";
 import {
   BookData,
   PaginatedBookData,
   SearchDetails,
 } from "../helpers/interfaces";
-import { UnauthorizedError } from "../helpers/utils";
+import { BadRequestError, UnauthorizedError } from "../helpers/utils";
 
 export const getBookList = async (
   query: string,
@@ -75,6 +76,32 @@ export const getBookByIsbn = async (
   }
 };
 
+export const getBooksByShelf = async (
+  shelfId: string
+): Promise<BookData[] | undefined> => {
+  const token: string | null = localStorage.getItem("token");
+
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(
+    `${API_BOOK}/shelf/${shelfId}`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    const res: BookData[] = await response.json();
+    return res;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+};
+
 export const getBookById = async (
   id: string
 ): Promise<BookData | undefined> => {
@@ -98,11 +125,43 @@ export const getBookById = async (
   }
 };
 
+export const removeBookFromShelf = async (
+  shelfId: string | undefined,
+  isbn: string | undefined
+): Promise<boolean> => {
+  const token: string | null = localStorage.getItem("token");
+
+  const requestOptions = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(
+    `${API_BOOK}/shelf/${shelfId}?isbn=${isbn}`,
+    requestOptions
+  );
+  if (response.status === 204) {
+    return true;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+  if (response.status === 400) {
+    const msg = await response.text();
+    throw new BadRequestError(msg);
+  }
+
+  return false;
+};
+
 export const saveSearchDetails = (data: SearchDetails) => {
   localStorage.setItem("bookList", JSON.stringify(data.bookList));
   localStorage.setItem("searchValue", data.searchValue);
-  localStorage.setItem("maxYear", JSON.stringify(data?.maxYear));
-  localStorage.setItem("minYear", JSON.stringify(data?.minYear));
+  localStorage.setItem("maxYear", data?.maxYear?.toDateString() || "");
+  localStorage.setItem("minYear", data?.minYear?.toDateString() || "");
   localStorage.setItem("order", data?.order || "");
   localStorage.setItem("onlyReview", JSON.stringify(data?.onlyReview));
   localStorage.setItem("page", JSON.stringify(data.page));
@@ -124,9 +183,7 @@ export const readSearchDetails = (): SearchDetails => {
     page: page ? JSON.parse(page) : 0,
     order: finalOrder,
     onlyReview: onlyReview ? JSON.parse(onlyReview) : false,
-    maxYear:
-      maxYear && maxYear !== "undefined" ? JSON.parse(maxYear) : undefined,
-    minYear:
-      minYear && minYear !== "undefined" ? JSON.parse(minYear) : undefined,
+    maxYear: maxYear && maxYear !== "undefined" ? new Date(maxYear) : undefined,
+    minYear: minYear && minYear !== "undefined" ? new Date(minYear) : undefined,
   };
 };

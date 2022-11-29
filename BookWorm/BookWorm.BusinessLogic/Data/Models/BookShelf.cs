@@ -10,7 +10,7 @@ namespace BookWorm.BusinessLogic.Data.Models
 {
     public class BookShelf
     {
-        public int ID
+        public int? ID
         {
             get; set;
         }
@@ -32,7 +32,7 @@ namespace BookWorm.BusinessLogic.Data.Models
             get; set;
         }
 
-        public bool IsWhislist
+        public bool IsWishlist
         {
             get; set;
         }

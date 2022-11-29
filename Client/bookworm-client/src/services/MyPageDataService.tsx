@@ -38,6 +38,10 @@ export const getMyPageData = async (): Promise<MyPageDataProps | undefined> => {
     const wishlist = res.bookShelves.find((bs) => bs.name === "Wishlist");
     const wishlistBooks = wishlist ? await getBookData(wishlist) : [];
 
+    if (wishlist?.ownerId) {
+      localStorage.setItem("ownerId", wishlist?.ownerId.toString());
+    }
+
     return {
       data: res,
       currentReadingList: {
@@ -56,6 +60,14 @@ export const getMyPageData = async (): Promise<MyPageDataProps | undefined> => {
   }
 
   return undefined;
+};
+
+export const getWishListItems = async (
+  res: BookShelf[] | undefined
+): Promise<BookData[] | undefined> => {
+  const wishlist = res?.find((bs) => bs.name === "Wishlist");
+  const wishlistBooks = wishlist ? await getBookData(wishlist) : [];
+  return wishlistBooks;
 };
 
 const getBookDataFromReadingRecord = async (
@@ -131,7 +143,39 @@ export const saveBookWishList = async (
   };
 
   const response: Response = await fetch(
-    `${API_USERAPPDATA}/savewishlist/${isbn}?uid=${uid}`,
+    `${API_USERAPPDATA}/wishlist/${isbn}?uid=${uid}`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    return true;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+  if (response.status === 400 || response.status === 401) {
+    const msg = await response.text();
+    throw new BadRequestError(msg);
+  }
+
+  return false;
+};
+
+export const deleteBookWishList = async (
+  isbn: string | undefined
+): Promise<boolean> => {
+  const token: string | null = localStorage.getItem("token");
+  const uid: string | null = localStorage.getItem("userId");
+
+  const requestOptions = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/wishlist/${isbn}?uid=${uid}`,
     requestOptions
   );
   if (response.status === 200) {
@@ -224,6 +268,7 @@ export const deleteReadingRecord = async (
 
   return false;
 };
+
 export const deleteReadingRecordByBookId = async (
   bookId: string
 ): Promise<boolean> => {
@@ -354,4 +399,234 @@ export const getReadingRecord = async (
   }
 
   return undefined;
+};
+
+export const getShelves = async (
+  userId?: string
+): Promise<BookShelf[] | undefined> => {
+  const token: string | null = localStorage.getItem("token");
+  const uid: string | null = userId ? userId : localStorage.getItem("userId");
+
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/shelves?userId=${uid}`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    const res: BookShelf[] = await response.json();
+
+    return res.filter((bs) => bs.isWishlist !== true);
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+
+  return undefined;
+};
+
+export const getShelf = async (
+  shelfId: string
+): Promise<BookShelf | undefined> => {
+  const token: string | null = localStorage.getItem("token");
+  const uid: string | null = localStorage.getItem("userId");
+
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/shelves/${shelfId}?userId=${uid}`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    const res: BookShelf = await response.json();
+
+    return res;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+
+  return undefined;
+};
+
+export const createShelfService = async (
+  newShelf: BookShelf
+): Promise<BookShelf | undefined> => {
+  const token: string | null = localStorage.getItem("token");
+  const ownerIdT: string | null = localStorage.getItem("ownerId");
+
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      ...newShelf,
+      ownerId: ownerIdT ? parseInt(ownerIdT) : -1,
+    }),
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/shelves`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    const res: BookShelf = await response.json();
+
+    return res;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+
+  return undefined;
+};
+
+export const editShelfService = async (
+  editedShelf: BookShelf
+): Promise<boolean> => {
+  const token: string | null = localStorage.getItem("token");
+  const ownerIdT: string | null = localStorage.getItem("ownerId");
+
+  const requestOptions = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      ...editedShelf,
+      ownerId: ownerIdT ? parseInt(ownerIdT) : -1,
+    }),
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/shelves`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    return true;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+
+  return false;
+};
+
+export const saveBookToShelf = async (
+  isbn: string,
+  shelfId: number
+): Promise<boolean> => {
+  const token: string | null = localStorage.getItem("token");
+  const uid: string | null = localStorage.getItem("userId");
+
+  const data: any = {
+    userId: uid,
+    isbn: isbn,
+    shelfId: shelfId,
+  };
+
+  const requestOptions = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify(data),
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/shelves/save`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    return true;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+  if (response.status === 400 || response.status === 401) {
+    const msg = await response.text();
+    throw new BadRequestError(msg);
+  }
+
+  return false;
+};
+
+export const deleteShelf = async (
+  shelfId: string | undefined
+): Promise<boolean> => {
+  const token: string | null = localStorage.getItem("token");
+  const uid: string | null = localStorage.getItem("userId");
+
+  const requestOptions = {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/shelves/${shelfId}?userId=${uid}`,
+    requestOptions
+  );
+  if (response.status === 204) {
+    return true;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+  if (response.status === 400) {
+    const msg = await response.text();
+    throw new BadRequestError(msg);
+  }
+
+  return false;
+};
+
+export const checkIsMyShelf = async (
+  shelfId: string | undefined
+): Promise<boolean> => {
+  const token: string | null = localStorage.getItem("token");
+
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(
+    `${API_USERAPPDATA}/shelves/${shelfId}/isowned`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    const res: boolean = await response.json();
+    return res;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+  if (response.status === 400) {
+    const msg = await response.text();
+    throw new BadRequestError(msg);
+  }
+
+  return false;
 };

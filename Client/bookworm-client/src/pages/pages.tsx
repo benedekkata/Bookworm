@@ -8,13 +8,16 @@ import PageNotFound from "../components/PageNotFound";
 import UserSettings from "../containers/userdata/UserSettings";
 import MyPageComponent from "../containers/mypage/MyPageComponent";
 import EditreadingRecord from "../containers/mypage/EditreadingRecord";
+import BookShelfEdit from "../containers/mypage/BookShelfEdit";
+import UsersSearch from "../containers/users/UsersSearch";
+import UserDetail from "../containers/users/UserDetail";
 
 export const HomePage = () => {
   return <Home></Home>;
 };
 
 export const UsersPage = () => {
-  return <div>USERS</div>;
+  return <UsersSearch />;
 };
 
 export const MyPagePage = () => {
@@ -35,6 +38,14 @@ export const ResisterPage = (props: { setAuthenticated: Function }) => {
 
 export const ReadingRecordEditPage = () => {
   return <EditreadingRecord />;
+};
+
+export const BookShelfEditPage = () => {
+  return <BookShelfEdit />;
+};
+
+export const UserDetailPage = () => {
+  return <UserDetail />;
 };
 
 export const RequireAuth = (props: { isAuthenticated: Boolean }) => {

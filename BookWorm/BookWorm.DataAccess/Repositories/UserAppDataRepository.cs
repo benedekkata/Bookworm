@@ -2,6 +2,7 @@
 using BookWorm.BusinessLogic.Data.Repositories;
 using BookWorm.DataAccess.Data;
 using BookWorm.DataAccess.Data.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,10 +19,12 @@ namespace BookWorm.DataAccess.Repositories
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<Data.Models.ApplicationUser> _userManager;
-        public UserAppDataRepository(ApplicationDbContext context, UserManager<Data.Models.ApplicationUser> userManager)
+        private IHttpContextAccessor _httpContextAccessor;
+        public UserAppDataRepository(ApplicationDbContext context, UserManager<Data.Models.ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<BusinessLogic.Data.Models.UserAppData> GetAppDataAsync(string userId)
@@ -53,7 +56,7 @@ namespace BookWorm.DataAccess.Repositories
                 IconURL = bs.IconURL,
                 ID = bs.ID,
                 IsPrivate = bs.IsPrivate,
-                IsWhislist = bs.IsWhislist,
+                IsWishlist = bs.IsWhislist,
                 Name = bs.Name,
                 OwnerId = bs.OwnerId,
                 BookIds = bs.Books.Select(b => b.Id).ToList(),
@@ -216,6 +219,135 @@ namespace BookWorm.DataAccess.Repositories
             if (reading == null) return null;
 
             return new BusinessLogic.Data.Models.ReadingRecord(userId, reading.IsMyCopy, reading.IsCurrentReading, reading.BookId, reading.StartTime, reading.EndTime);
+        }
+
+        public async Task<bool> RemoveBookFromWishList(string uid, string bookId)
+        {
+            var userAppData = _context.UserAppData.Include(bs => bs.BookShelfs).ThenInclude(b => b.Books).Where(u => u.UserId == uid).FirstOrDefault();
+            if (userAppData == null) return false;
+
+            Data.Models.BookShelf wishList = userAppData.BookShelfs.Where(bs => bs.IsWhislist == true).FirstOrDefault();
+
+            Data.Models.Book toDelete = wishList.Books.Where(book => book.Id == bookId).FirstOrDefault();
+            wishList.Books.Remove(toDelete);
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public async Task<IEnumerable<BusinessLogic.Data.Models.BookShelf>> GetShelvesAsync(string userId)
+        {
+            var data = _context.UserAppData.Include(uad => uad.ApplictionUser).Include(uad => uad.BookShelfs).ThenInclude(b => b.Books).Where(u => u.UserId == userId).FirstOrDefault();
+
+            if (data == null) return null;
+
+            var currentUserName = _httpContextAccessor.HttpContext?.User.Identities.First().Name;
+            List<BusinessLogic.Data.Models.BookShelf> bs = ConvertBookSelves(data.BookShelfs);
+
+            if (currentUserName != data.ApplictionUser.UserName)
+            {
+                bs = bs.Where(s => s.IsPrivate == false).ToList();
+            }
+            
+            return bs;
+        }
+
+        public async Task<BusinessLogic.Data.Models.BookShelf> CreateShelf(BusinessLogic.Data.Models.BookShelf shelf)
+        {
+            //Check if WishList with userid exists if not create and save
+            var userAppData = _context.UserAppData.Include(bs => bs.BookShelfs).Where(u => u.ID == shelf.OwnerId).FirstOrDefault();
+            if (userAppData == null) return null;
+
+            var newShelf = new Data.Models.BookShelf()
+            {
+                IconURL = shelf.IconURL == null ? String.Empty : shelf.IconURL,
+                OwnerId = shelf.OwnerId,
+                IsPrivate = shelf.IsPrivate,
+                IsWhislist = false,
+                Name = shelf.Name
+            };
+            _context.BookShelf.Add(newShelf);
+
+            _context.SaveChanges();
+
+            shelf.ID = newShelf.ID;
+            shelf.IsWishlist = false;
+
+            return shelf;
+        }
+
+        public async 
+            Task<int> SaveBookToShelf(string userId, int shelfId, string bookId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return -1;
+
+            //Check if Shelf with userid exists
+            var userAppData = _context.UserAppData.Include(bs => bs.BookShelfs).ThenInclude(bs => bs.Books).Where(u => u.UserId == user.Id).FirstOrDefault();
+            var shelf = userAppData?.BookShelfs.Where(bs => bs.ID == shelfId).FirstOrDefault();
+            var book = _context.Book.Where(b => b.Id == bookId).FirstOrDefault();
+
+            if (userAppData == null || shelf == null) return -1;
+
+            if(shelf.Books == null)
+            {
+                shelf.Books = new List<Data.Models.Book>();
+            }
+
+            shelf.Books.Add(book);
+
+            _context.SaveChanges();
+
+            return shelf.ID;
+        }
+
+        public async Task<BusinessLogic.Data.Models.BookShelf> GetShelfAsync(int shelfId)
+        {
+            var shelf = _context.BookShelf.Include(bs => bs.Books).FirstOrDefault(s => s.ID == shelfId);
+
+            return ConvertBookSelves(new List<Data.Models.BookShelf> { shelf }).First();
+        }
+
+        public async Task<int> EditShelf(BusinessLogic.Data.Models.BookShelf shelf)
+        {
+            var userAppData = _context.UserAppData.Include(bs => bs.BookShelfs).Where(u => u.ID == shelf.OwnerId).FirstOrDefault();
+            var bookShelf = _context.BookShelf.Where(bs => bs.ID == shelf.ID).FirstOrDefault();
+
+            if (userAppData == null || bookShelf == null) return -1;
+
+            bookShelf.IsPrivate = shelf.IsPrivate;
+            bookShelf.Name = shelf.Name;
+            bookShelf.IconURL = shelf.IconURL;
+
+            _context.SaveChanges();
+
+            return bookShelf.ID;
+        }
+
+        public async Task<bool> RemoveShelf(int shelfId, string userId)
+        {
+            var userAppData = _context.UserAppData.Include(ud => ud.BookShelfs).Where(u => u.UserId == userId).FirstOrDefault();
+            if (userAppData == null) return false;
+
+            var toDelete = userAppData.BookShelfs.Find(bs => bs.ID == shelfId);
+            if (toDelete == null) return false;
+
+            _context.BookShelf.Remove(toDelete);
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public async Task<bool> CheckIfOwnShelfAsync(int shelfId)
+        {
+            var bookShelf = _context.BookShelf.Include(bs => bs.Owner).FirstOrDefault(bs => bs.ID == shelfId);
+            if (bookShelf == null) return false;
+
+            var currentUserName = _httpContextAccessor.HttpContext?.User.Identities.First().Name;
+            var ownerUserId = bookShelf.Owner.UserId;
+            var owner = await _userManager.FindByIdAsync(ownerUserId);
+
+            return owner.UserName == currentUserName;
         }
     }
 }

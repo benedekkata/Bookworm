@@ -34,7 +34,12 @@ const SaveBookModal = (props: { isOpen: boolean; onClose: any }) => {
           ></SaveFormWishlist>
         );
       case "shelf":
-        return <SaveFormShelf submitRef={submitRef}></SaveFormShelf>;
+        return (
+          <SaveFormShelf
+            closeModal={props.onClose}
+            ref={submitRef}
+          ></SaveFormShelf>
+        );
     }
   };
 
@@ -59,7 +64,7 @@ const SaveBookModal = (props: { isOpen: boolean; onClose: any }) => {
             >
               <option value="reading">Readings</option>
               <option value="wishlist">Wishlist</option>
-              <option value="shelf">Self</option>
+              <option value="shelf">Shelf</option>
             </Select>
           </FormControl>
           {saveForm()}

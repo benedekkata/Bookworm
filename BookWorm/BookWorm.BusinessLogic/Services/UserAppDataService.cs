@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,6 +21,22 @@ namespace BookWorm.BusinessLogic.Services
         {
             _userAppDataRepository = userAppDataRepository;
             _bookRepository = bookRepository;
+        }
+
+        public async Task<BookShelf> CreateShelfAsync(BookShelf shelf)
+        {
+            var res = await _userAppDataRepository.CreateShelf(shelf);
+
+            if (res == null) throw new UserNotFoundException("There is not any registered user with id: " + shelf.OwnerId);
+
+            return res;
+        }
+
+        public async Task EditShelfByIdAsync(BookShelf shelf)
+        {
+            var res = await _userAppDataRepository.EditShelf(shelf);
+
+            if (res == -1) throw new UserNotFoundException("There is not any registered user with id: " + shelf.OwnerId);
         }
 
         public async Task EditBio(string userId, string biotext)
@@ -67,6 +84,36 @@ namespace BookWorm.BusinessLogic.Services
             return res;
         }
 
+        public async Task<BookShelf> GetShelfByIdAsync(int shelfId)
+        {
+            return await _userAppDataRepository.GetShelfAsync(shelfId);
+        }
+
+        public async Task<IEnumerable<BookShelf>> GetShelvesAsync(string userId)
+        {
+            var res = await _userAppDataRepository.GetShelvesAsync(userId);
+
+            if (res == null) throw new UserNotFoundException("There is not any registered user with id: " + userId);
+            return res;
+        }
+
+        public async Task RemoveBookFromWishListAsync(string isbn, string uid)
+        {
+           
+            var book = await _bookRepository.GetBookFormDbByIsbn(isbn);
+
+            if (book != null)
+            {
+                var res = await _userAppDataRepository.RemoveBookFromWishList(uid, book.Id);
+
+                if (!res) throw new UserNotFoundException("There is not any registered user with id: " + uid);
+            }
+            else
+            {
+                throw new BookNotFoundException("There is no wishlist item with isbn: " + isbn);
+            }
+        }
+
         public async Task RemoveReadingRecordAsync(ReadingRecord readingRecord)
         {
             var res = await _userAppDataRepository.RemoveReadingRecord(readingRecord.BookId, readingRecord.UserId);
@@ -90,6 +137,32 @@ namespace BookWorm.BusinessLogic.Services
 
                     if (res == -1) throw new UserNotFoundException("There is not any registered user with id: " + readingRecord.UserId);
                     return res;
+                }
+                else
+                {
+                    throw new BookNotFoundException("Some error occured during the saving!");
+                }
+            }
+            catch (HttpRequestException e)
+            {
+                throw new BookNotFoundException($"{e.Message}");
+            }
+        }
+
+        public async Task SaveBookToShelf(SaveToShelfRequest request)
+        {
+            //Save book to db first
+            try
+            {
+                var book = await _bookRepository.GetBookByIsbn(request.Isbn);
+                var bookId = await _bookRepository.SaveBook(book);
+
+                if (bookId != null)
+                {
+                    var res = await _userAppDataRepository.SaveBookToShelf(request.UserId, request.ShelfId, bookId);
+
+                    if (res == -1) throw new UserNotFoundException("There is not any registered user with id: " + request.UserId);
+                    
                 }
                 else
                 {
@@ -126,6 +199,18 @@ namespace BookWorm.BusinessLogic.Services
             {
                 throw new BookNotFoundException($"{e.Message}");
             }
+        }
+
+        public async Task DeleteShelfByIdAsync(int shelfId, string userId)
+        {
+            var res = await _userAppDataRepository.RemoveShelf(shelfId, userId);
+
+            if (res == false) throw new UserNotFoundException("There is not any reading record with the given data");
+        }
+
+        public async Task<bool> CheckIfOwnShelfAsync(int shelfId)
+        {
+            return await _userAppDataRepository.CheckIfOwnShelfAsync(shelfId);
         }
     }
 }
