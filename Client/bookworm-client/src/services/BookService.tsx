@@ -125,6 +125,32 @@ export const getBookById = async (
   }
 };
 
+export const getBookRatingById = async (
+  id: string
+): Promise<number | undefined> => {
+  const token: string | null = localStorage.getItem("token");
+
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const response: Response = await fetch(
+    `${API_BOOK}/rating/${id}`,
+    requestOptions
+  );
+  if (response.status === 200) {
+    const res: number = await response.json();
+    return res;
+  }
+  if (response.status === 401) {
+    throw new UnauthorizedError("You have to be logged in to use this.");
+  }
+};
+
 export const removeBookFromShelf = async (
   shelfId: string | undefined,
   isbn: string | undefined

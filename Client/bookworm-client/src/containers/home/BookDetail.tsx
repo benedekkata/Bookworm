@@ -26,6 +26,7 @@ const BookDetail = () => {
   const [book, setBook] = useState<BookData>();
   const [bookNotFound, setBookNotFound] = useState(false);
   const { isbn } = useParams();
+
   useEffect(() => {
     getBookByIsbn(isbn || "")
       .then(setBook)

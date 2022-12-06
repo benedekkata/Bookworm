@@ -13,6 +13,7 @@ import {
   Textarea,
   Button,
   Spacer,
+  Avatar,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 
@@ -25,10 +26,16 @@ import {
   removeReviewDb,
   sendReview,
 } from "../../services/ReviewService";
-import { useNavigate, useParams } from "react-router-dom";
-import { Review, UnauthorizedError } from "../../helpers/interfaces";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  Review,
+  UnauthorizedError,
+  UserDetailPublic,
+} from "../../helpers/interfaces";
 import Loading from "../../layouts/Loading";
 import { isAuthenticated } from "../../services/AuthenticationService";
+import { getUserDetailPublic } from "../../services/UserService";
+import { getBookRatingById } from "../../services/BookService";
 
 const ReviewItem = (props: {
   key: string;
@@ -37,6 +44,11 @@ const ReviewItem = (props: {
   edit: Function;
 }) => {
   let stars = [];
+  const [userData, setUserData] = useState<UserDetailPublic>();
+  useEffect(() => {
+    getUserDetailPublic(props.review.userId).then(setUserData);
+  }, []);
+
   const { isbn } = useParams();
   const normalizedPoints: number =
     Math.abs(props.review.stars) > 5 ? 5 : Math.abs(props.review.stars);
@@ -97,11 +109,17 @@ const ReviewItem = (props: {
       minHeight="10rem"
     >
       <Flex>
-        <Box>
-          <Icon w={8} h={8} as={FaUserCircle}></Icon>
+        <Box pb={1}>
+          <Avatar
+            size="sm"
+            name={userData?.data.displayName}
+            src={userData?.data.profileImgUrl}
+          />
         </Box>
         <Box pl="1rem" fontSize="xl" fontWeight="bold">
-          <Text>{props.review.userId}</Text>
+          <Link to={`/users/${props.review.userId}`}>
+            {userData?.data.displayName}
+          </Link>
         </Box>
       </Flex>
       <Box borderBottom="0.2rem solid" borderColor="brand.100" w="50%" />
@@ -126,9 +144,13 @@ const BookReview = () => {
 
   const [isOnEditMode, setIsOnEditMode] = useState(false);
   const [currentReview, setCurrentReview] = useState<Review | null>(null);
+  const [rating, setRating] = useState<number | undefined>();
   useEffect(() => {
     getReviews(isbn).then(setReviews).catch();
   }, []);
+  useEffect(() => {
+    getBookRatingById(reviews?.at(0)?.bookId || "").then(setRating);
+  }, [reviews]);
 
   const modifyReview = async (review: Review) => {
     setIsOnEditMode(true);
@@ -140,17 +162,20 @@ const BookReview = () => {
     setCurrentReview(review);
   };
 
-  const reviewItems = reviews?.map((r) => (
-    <ReviewItem
-      key={r.id + "r_item"}
-      review={r}
-      modify={setReviews}
-      edit={modifyReview}
-    />
-  ));
+  const reviewItems = reviews?.map((r) => {
+    return (
+      <ReviewItem
+        key={r.id + "r_item"}
+        review={r}
+        modify={setReviews}
+        edit={modifyReview}
+      />
+    );
+  });
 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+
   const onReviewSend = async () => {
     setIsLoading(true);
     let success = false;
@@ -292,6 +317,9 @@ const BookReview = () => {
           boxShadow="md"
         >
           <Text fontSize="3xl">Reviews</Text>
+          <Box>
+            <Text>Average rating: {rating} star(s)</Text>
+          </Box>
         </Container>
         {reviewItems}
         <Box>{isLoading ? <Loading /> : reviewForm}</Box>

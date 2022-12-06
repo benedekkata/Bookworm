@@ -11,5 +11,6 @@ namespace BookWorm.BusinessLogic.Data.Repositories
         Task<Book> GetBookById(string bookId);
         Task<IEnumerable<Book>> GetBooksByShelfId(int shelfId);
         Task<Book> DeleteBookByIsbnFromShelf(int shelfId, string isbn);
-    }
+    Task<double> GetBookRatingByIdAsync(string bookId);
+  }
 }
