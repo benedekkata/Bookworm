@@ -156,7 +156,7 @@ const Login = (props: { setAuthenticated: Function }) => {
           <Box>{isLoading ? null : loginButton}</Box>
         </Container>
       </Center>
-      <Center w="40%" backgroundColor="brand.100">
+      <Center w="40%" minH="92vh" backgroundColor="brand.100">
         <Container>
           <Image
             display="inline-block"
